@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CNEL Analytics</title>
-    <!-- CSS Principal -->
+    <!-- Estilos CSS del Proyecto -->
     <link rel="stylesheet" href="/static/css/index.css">
-    <!-- Iconos de FontAwesome para el menú -->
+    <!-- FontAwesome (Iconos) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js para los gráficos de consumo -->
+    <!-- SweetAlert2 (Alertas modernas) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Chart.js (Gráficos) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -56,7 +58,7 @@
             <!-- HEADER SUPERIOR -->
             <header class="top-header">
                 <div class="search-bar">
-                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <i class="fa-solid fa-magnifying-glass" onclick="buscarCliente()" style="cursor:pointer;"></i>
                     <input type="text" id="codigoUsuario" placeholder="codigo de usuario" onkeypress="handleSearch(event)">
                 </div>
                 <div class="user-greeting">
@@ -77,7 +79,7 @@
                     <!-- Columna Izquierda -->
                     <div class="info-card">
                         <div class="card-title">
-                            CODIGO CLIENTE: <span id="lbl-codigo-1">XXXXXXXXXXXX</span>
+                            INFO CLIENTE: <span id="lbl-codigo-1"></span>
                         </div>
                         <table class="custom-table">
                             <thead>
@@ -100,7 +102,7 @@
                     <!-- Columna Derecha -->
                     <div class="info-card">
                         <div class="card-title">
-                            CODIGO CLIENTE: <span id="lbl-codigo-2">XXXXXXXXXXXX</span>
+                            DATOS PRINCIPALES: <span id="lbl-codigo-2"></span>
                         </div>
                         <table class="custom-table">
                             <thead>
@@ -119,10 +121,50 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="info-card">
+                        <div class="card-title">
+                            CREDITO Y DEBITO CLIENTE: <span id="lbl-codigo-2"></span>
+                        </div>
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>INDICE</th>
+                                    <th>INFO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>11</td><td>FECHA:</td><td id="val-medidor">-</td></tr>
+                                <tr><td>12</td><td>N° CREDITO:</td><td id="val-marca">-</td></tr>
+                                <tr><td>13</td><td>KWH:</td><td id="val-serie">-</td></tr>
+                                <tr><td>14</td><td>VALOR:</td><td id="val-meses-deuda">-</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-title">
+                            CONVENIOS CLIENTE: <span id="lbl-codigo-2"></span>
+                        </div>
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>INDICE</th>
+                                    <th>INFO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>15</td><td>FECHA:</td><td id="val-medidor">-</td></tr>
+                                <tr><td>16</td><td>OBSERVACION:</td><td id="val-marca">-</td></tr>
+                                <tr><td>17</td><td>VALOR:</td><td id="val-serie">-</td></tr>
+                                <tr><td>18</td><td>No PARTES</td><td id="val-meses-deuda">-</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
-            <!-- OTRAS SECCIONES (SE MOSTRARÁN DINÁMICAMENTE) -->
+            <!-- SECCIONES SECUNDARIAS -->
             <section id="sec-estado-cuenta" class="content-section">
                 <h3>ESTADO DE CUENTA</h3>
                 <div id="container-estado-cuenta"></div>
@@ -146,7 +188,7 @@
         </main>
     </div>
 
-    <!-- JS Principal -->
+    <!-- Script de Funcionalidad -->
     <script src="/static/js/index.js"></script>
 </body>
 </html>

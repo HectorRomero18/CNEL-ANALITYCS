@@ -27,7 +27,7 @@ body {
     height: 100vh;
 }
 
-/* SIDEBAR LATERAL */
+/* SIDEBAR */
 .sidebar {
     width: 240px;
     background: var(--sidebar-bg);
@@ -106,6 +106,11 @@ body {
     color: #94A3B8;
 }
 
+.menu-item.logout:hover {
+    color: #EF4444;
+    background-color: #FEF2F2;
+}
+
 /* CONTENIDO PRINCIPAL */
 .main-content {
     flex: 1;
@@ -176,9 +181,16 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
+    transition: all 0.2s ease;
 }
 
-/* CUADRÍCULA DE DATOS */
+.btn-export:hover {
+    background: #F8FAFC;
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+/* CARDS Y TABLAS */
 .tables-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
