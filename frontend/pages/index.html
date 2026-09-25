@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CNEL Analytics</title>
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="/static/css/index.css">
+    <!-- Iconos de FontAwesome para el menú -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js para los gráficos de consumo -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="app-layout">
+        <!-- BARRA LATERAL (SIDEBAR) -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <h2>CNEL<br><span>ANALITYCS</span></h2>
+            </div>
+
+            <nav class="sidebar-menu">
+                <button class="menu-item active" onclick="showSection('info-cliente')">
+                    <i class="fa-solid fa-user"></i>
+                    <span>INFO CLIENTE</span>
+                </button>
+                <button class="menu-item" onclick="showSection('estado-cuenta')">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>ESTADO DE CUENTA</span>
+                </button>
+                <button class="menu-item" onclick="showSection('estcta-sico')">
+                    <i class="fa-solid fa-comment-dots"></i>
+                    <span>ESTCTA SICO</span>
+                </button>
+                <button class="menu-item" onclick="showSection('consumo')">
+                    <i class="fa-solid fa-bolt-lightning"></i>
+                    <span>CONSUMO</span>
+                </button>
+                <button class="menu-item" onclick="showSection('lectura')">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>LECTURA</span>
+                </button>
+                <button class="menu-item logout" onclick="cerrarSesion()">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>CERRAR SESION</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            <!-- HEADER SUPERIOR -->
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="codigoUsuario" placeholder="codigo de usuario" onkeypress="handleSearch(event)">
+                </div>
+                <div class="user-greeting">
+                    <span>Hola, <strong id="userName">Marlene</strong></span>
+                </div>
+            </header>
+
+            <!-- SECCIÓN: INFO CLIENTE (PANEL PRINCIPAL) -->
+            <section id="sec-info-cliente" class="content-section active">
+                <div class="section-header">
+                    <h3>INFORMACION CLIENTE</h3>
+                    <button class="btn-export" onclick="exportarExcel()">
+                        <i class="fa-solid fa-download"></i> Exportar
+                    </button>
+                </div>
+
+                <div class="tables-grid">
+                    <!-- Columna Izquierda -->
+                    <div class="info-card">
+                        <div class="card-title">
+                            CODIGO CLIENTE: <span id="lbl-codigo-1">XXXXXXXXXXXX</span>
+                        </div>
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>INDICE</th>
+                                    <th>INFO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>01</td><td>NOMBRE:</td><td id="val-nombre">-</td></tr>
+                                <tr><td>02</td><td>CEDULA:</td><td id="val-cedula">-</td></tr>
+                                <tr><td>03</td><td>FECHA DE INSTALACION:</td><td id="val-fecha-inst">-</td></tr>
+                                <tr><td>04</td><td>DIRECCION:</td><td id="val-direccion">-</td></tr>
+                                <tr><td>05</td><td>DEUDA MIGRADA A SICO:</td><td id="val-deuda-sico">-</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Columna Derecha -->
+                    <div class="info-card">
+                        <div class="card-title">
+                            CODIGO CLIENTE: <span id="lbl-codigo-2">XXXXXXXXXXXX</span>
+                        </div>
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>INDICE</th>
+                                    <th>INFO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>06</td><td>MEDIDOR:</td><td id="val-medidor">-</td></tr>
+                                <tr><td>07</td><td>MARCA:</td><td id="val-marca">-</td></tr>
+                                <tr><td>08</td><td>SERIE:</td><td id="val-serie">-</td></tr>
+                                <tr><td>09</td><td>MESES DE DEUDA:</td><td id="val-meses-deuda">-</td></tr>
+                                <tr><td>10</td><td>DEUDA MIGRADA A SAP:</td><td id="val-deuda-sap">-</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- OTRAS SECCIONES (SE MOSTRARÁN DINÁMICAMENTE) -->
+            <section id="sec-estado-cuenta" class="content-section">
+                <h3>ESTADO DE CUENTA</h3>
+                <div id="container-estado-cuenta"></div>
+            </section>
+
+            <section id="sec-estcta-sico" class="content-section">
+                <h3>ESTADO SICO</h3>
+                <div id="container-sico"></div>
+            </section>
+
+            <section id="sec-consumo" class="content-section">
+                <h3>HISTORIAL DE CONSUMO</h3>
+                <canvas id="chartConsumo" style="max-height: 350px;"></canvas>
+                <div id="container-consumo" style="margin-top:20px;"></div>
+            </section>
+
+            <section id="sec-lectura" class="content-section">
+                <h3>HISTORIAL DE LECTURAS</h3>
+                <div id="container-lectura"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- JS Principal -->
+    <script src="/static/js/index.js"></script>
+</body>
+</html>

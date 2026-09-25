@@ -1,0 +1,94 @@
+# ==========================================
+# Python & Cache
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ==========================================
+# Entornos Virtuales
+# ==========================================
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# ==========================================
+# Variables de Entorno y Secretos
+# ==========================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ==========================================
+# Bases de Datos Locales
+# ==========================================
+*.sqlite3
+*.db
+*.sqlite
+
+# ==========================================
+# Archivos del Sistema Operativo
+# ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSSharedFileList
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehdesktop.ini
+Desktop.ini
+$RECYCLE.BIN/
+
+# ==========================================
+# IDEs y Editores de Código
+# ==========================================
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# PyCharm / JetBrains
+.idea/
+
+# ==========================================
+# Pruebas, Cobertura y Logs
+# ==========================================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+*.log
+logs/
+.mypy_cache/
+.ruff_cache/
