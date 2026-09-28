@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import clientes, export
+from app.routers import clientes, export, auth
 from pathlib import Path
 from fastapi.responses import FileResponse
 
@@ -23,11 +23,18 @@ app.add_middleware(
 # Conectar routers backend
 app.include_router(clientes.router)
 app.include_router(export.router)
+app.include_router(auth.router)
 
 # Servir Frontend
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 app.mount("/static", StaticFiles(directory=PROJECT_ROOT / "frontend"), name="static")
 
+# Ruta para el login (Página principal)
 @app.get("/")
 def read_root():
+    return FileResponse(PROJECT_ROOT / "frontend" / "pages" / "login.html")
+
+# RUTA NUEVA: Para servir el Dashboard / Index
+@app.get("/dashboard")
+def read_dashboard():
     return FileResponse(PROJECT_ROOT / "frontend" / "pages" / "index.html")

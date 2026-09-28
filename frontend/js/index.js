@@ -1,3 +1,7 @@
+
+/* ==========================================================================
+   2. LÓGICA DEL DASHBOARD DE CONSULTAS (main.js / index.js)
+   ========================================================================== */
 let clienteActual = null;
 let chartConsumosInstance = null;
 
@@ -14,14 +18,14 @@ function showSection(sectionName) {
     }
 }
 
-// Búsqueda al pulsar Enter
+// Búsqueda al pulsar la tecla Enter
 function handleSearch(event) {
     if (event.key === 'Enter') {
         buscarCliente();
     }
 }
 
-// Búsqueda interactiva con SweetAlert2
+// Búsqueda interactiva con SweetAlert2 y Bearer Token
 async function buscarCliente() {
     const codigoInput = document.getElementById("codigoUsuario").value.trim();
     
@@ -45,9 +49,22 @@ async function buscarCliente() {
     });
 
     try {
-        const response = await fetch(`/api/clientes/${codigoInput}`);
+        const token = localStorage.getItem('token');
+
+        const response = await fetch(`/api/clientes/${codigoInput}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         
         if (!response.ok) {
+            // Si la sesión expiró o el token no es válido, expulsar al login
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                window.location.href = '/';
+                return;
+            }
+
             const err = await response.json();
             Swal.fire({
                 icon: 'error',
@@ -106,7 +123,7 @@ async function buscarCliente() {
     }
 }
 
-// Render del gráfico
+// Renderizado del gráfico Chart.js
 function renderConsumoChart(consumos) {
     const ctx = document.getElementById('chartConsumo').getContext('2d');
     if (chartConsumosInstance) chartConsumosInstance.destroy();
@@ -179,14 +196,18 @@ function cerrarSesion() {
         cancelButtonText: 'Permanecer'
     }).then((result) => {
         if (result.isConfirmed) {
+            // Eliminar token almacenado de la sesión
+            localStorage.removeItem('token');
+
             Swal.fire({
                 title: 'Sesión finalizada',
                 text: 'Redirigiendo...',
                 icon: 'success',
-                timer: 1500,
+                timer: 1200,
                 showConfirmButton: false
             }).then(() => {
-                window.location.reload();
+                // Redirigir a la pantalla de login
+                window.location.href = '/';
             });
         }
     });
