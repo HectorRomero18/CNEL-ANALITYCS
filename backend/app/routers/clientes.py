@@ -46,3 +46,4 @@ def obtener_cliente_completo(codigo_cliente: str, db: Session = Depends(get_db))
         if isinstance(e, HTTPException):
             raise e
         raise HTTPException(status_code=500, detail="Error de comunicación con la base de datos de CNEL EP.")
+

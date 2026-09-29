@@ -1,0 +1,45 @@
+{% extends "index.html" %}
+
+{% block title %}Historial de Lectura - CNEL Analytics{% endblock %}
+
+{% block content %}
+<!-- MÓDULO: HISTORIAL DE LECTURA -->
+<section id="sec-lectura" class="content-section active">
+    <div class="section-header">
+        <div class="header-title">
+            <h3>HISTORIAL DE LECTURAS</h3>
+            <span class="subtitle">Código de Cliente: <strong id="lbl-codigo-lectura">-</strong></span>
+        </div>
+        <div class="header-actions">
+            <button class="btn-export" onclick="exportarExcel()">
+                <i class="fa-solid fa-download"></i> Exportar
+            </button>
+        </div>
+    </div>
+
+    <!-- TABLA DE HISTORIAL DE LECTURAS -->
+    <div class="info-card table-card">
+        <div class="card-title">
+            <i class="fa-solid fa-gauge-high"></i> REGISTRO HISTÓRICO DE LECTURAS DE MEDIDOR
+        </div>
+        <div class="table-responsive">
+            <table class="custom-table" id="tabla-lectura">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>FECHA LECTURA</th>
+                        <th>MEDIDOR</th>
+                        <th>LECTURA ANTERIOR</th>
+                        <th>LECTURA ACTUAL</th>
+                        <th>CONSUMO (kWh)</th>
+                        <th>TIPO LECTURA</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Script independiente para Lectura -->
+<script src="/static/js/lectura.js"></script>
+{% endblock %}

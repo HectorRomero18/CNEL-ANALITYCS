@@ -1,0 +1,44 @@
+{% extends "index.html" %}
+
+{% block title %}Estado Cuenta SICO - CNEL Analytics{% endblock %}
+
+{% block content %}
+<!-- MÓDULO: ESTADO CUENTA SICO -->
+<section id="sec-estcta-sico" class="content-section active">
+    <div class="section-header">
+        <div class="header-title">
+            <h3>ESTADO DE CUENTA SICO</h3>
+            <span class="subtitle">Código de Cliente: <strong id="lbl-codigo-sico">-</strong></span>
+        </div>
+        <div class="header-actions">
+            <div class="summary-badge">
+                <span>Saldo SICO: </span>
+                <strong id="lbl-saldo-sico">$0.00</strong>
+            </div>
+            <button class="btn-export" onclick="exportarExcel()">
+                <i class="fa-solid fa-download"></i> Exportar
+            </button>
+        </div>
+    </div>
+
+    <!-- TABLA DE ESTADO CUENTA SICO -->
+    <div class="info-card table-card">
+        <div class="card-title">
+            <i class="fa-solid fa-comment-dots"></i> REGISTROS HISTÓRICOS SICO
+        </div>
+        <div class="table-responsive">
+            <table class="custom-table" id="tabla-estcta-sico">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>FECHA</th>
+                        <th>TIPO</th>
+                        <th>VALOR</th>
+                        <th>SALDO</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

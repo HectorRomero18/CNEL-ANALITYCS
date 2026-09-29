@@ -183,9 +183,10 @@ function exportarExcel() {
     });
 }
 
-// Confirmación para cerrar sesión
-function cerrarSesion() {
-    Swal.fire({
+async function cerrarSesion(event) {
+    if (event) event.preventDefault();
+
+    const confirmar = await Swal.fire({
         title: '¿Cerrar sesión?',
         text: '¿Está seguro de que desea salir del sistema CNEL Analytics?',
         icon: 'warning',
@@ -194,21 +195,44 @@ function cerrarSesion() {
         cancelButtonColor: '#94A3B8',
         confirmButtonText: 'Sí, salir',
         cancelButtonText: 'Permanecer'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Eliminar token almacenado de la sesión
-            localStorage.removeItem('token');
-
-            Swal.fire({
-                title: 'Sesión finalizada',
-                text: 'Redirigiendo...',
-                icon: 'success',
-                timer: 1200,
-                showConfirmButton: false
-            }).then(() => {
-                // Redirigir a la pantalla de login
-                window.location.href = '/';
-            });
-        }
     });
+
+    if (!confirmar.isConfirmed) {
+        return;
+    }
+
+    try {
+        await fetch('/auth/logout', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+    } finally {
+        localStorage.clear();
+        sessionStorage.clear();
+        document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; samesite=lax';
+        window.location.replace('/');
+    }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Obtener los datos del usuario guardados en localStorage
+    const userStr = localStorage.getItem("user") || localStorage.getItem("usuario");
+    const userNameElement = document.getElementById("userName");
+
+    if (userNameElement) {
+        if (userStr) {
+            try {
+                const userObj = JSON.parse(userStr);
+                // Muestra nombre, primer_nombre o username según lo que exista
+                userNameElement.innerText = userObj.primer_nombre || userObj.nombre || userObj.username || 'Usuario';
+            } catch (e) {
+                userNameElement.innerText = userStr; // Si solo se guardó un string directo
+            }
+        }
+    }
+});

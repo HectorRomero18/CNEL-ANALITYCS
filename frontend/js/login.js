@@ -43,6 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // Guardar Token y datos de usuario en localStorage
+            localStorage.setItem("token", data.access_token);
+            localStorage.setItem("user", JSON.stringify(data.user));
             localStorage.setItem("cnel_token", data.access_token);
             localStorage.setItem("cnel_user", JSON.stringify(data.user));
 

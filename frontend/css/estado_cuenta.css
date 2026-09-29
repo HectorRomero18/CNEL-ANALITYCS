@@ -1,0 +1,125 @@
+/* --- ESTILOS DE LA SECCIÓN ESTADO DE CUENTA --- */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header-title h3 {
+    font-size: 1.25rem;
+    color: #1E293B;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.header-title .subtitle {
+    font-size: 0.875rem;
+    color: #64748B;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.summary-badge {
+    background-color: #EEF2FF;
+    border: 1px solid #C7D2FE;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #3730A3;
+}
+
+.summary-badge strong {
+    font-size: 1.05rem;
+    color: #4F46E5;
+}
+
+/* Tarjeta y Tabla */
+.table-card {
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.table-responsive {
+    overflow-x: auto;
+    margin-top: 10px;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    text-align: left;
+}
+
+.custom-table th {
+    background-color: #F8FAFC;
+    color: #64748B;
+    font-weight: 600;
+    padding: 12px 16px;
+    border-bottom: 2px solid #E2E8F0;
+    text-transform: uppercase;
+}
+
+.custom-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #F1F5F9;
+    color: #334155;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #F8FAFC;
+}
+
+/* Badges de Tipo y Estado */
+.badge-tipo {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.badge-tipo.factura {
+    background-color: #FEF3C7;
+    color: #D97706;
+}
+
+.badge-tipo.pago {
+    background-color: #D1FAE5;
+    color: #059669;
+}
+
+.badge-estado {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-estado.pagado {
+    color: #10B981;
+}
+
+.badge-estado.pendiente {
+    color: #EF4444;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 10px !important;
+    color: #94A3B8;
+}
+
+.empty-state i {
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 8px;
+}

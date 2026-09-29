@@ -37,6 +37,10 @@ body {
     padding: 24px 16px;
 }
 
+.sidebar a {
+    text-decoration: none;
+}
+
 .brand {
     display: flex;
     align-items: center;

@@ -1,0 +1,105 @@
+{% extends "index.html" %}
+
+{% block title %}Información de Cliente - CNEL Analytics{% endblock %}
+
+{% block content %}
+<!-- MÓDULO: INFORMACIÓN CLIENTE -->
+<section id="sec-info-cliente" class="content-section active">
+    <div class="section-header">
+        <h3>INFORMACION CLIENTE</h3>
+        <button class="btn-export" onclick="exportarExcel()">
+            <i class="fa-solid fa-download"></i> Exportar
+        </button>
+    </div>
+
+    <div class="tables-grid">
+        <!-- Columna Izquierda -->
+        <div class="info-card">
+            <div class="card-title">
+                INFO CLIENTE: <span id="lbl-codigo-1"></span>
+            </div>
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>INDICE</th>
+                        <th>INFO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>01</td><td>NOMBRE:</td><td id="val-nombre">-</td></tr>
+                    <tr><td>02</td><td>CEDULA:</td><td id="val-cedula">-</td></tr>
+                    <tr><td>03</td><td>FECHA DE INSTALACION:</td><td id="val-fecha-inst">-</td></tr>
+                    <tr><td>04</td><td>DIRECCION:</td><td id="val-direccion">-</td></tr>
+                    <tr><td>05</td><td>DEUDA MIGRADA A SICO:</td><td id="val-deuda-sico">-</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Columna Derecha -->
+        <div class="info-card">
+            <div class="card-title">
+                DATOS PRINCIPALES: <span id="lbl-codigo-2"></span>
+            </div>
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>INDICE</th>
+                        <th>INFO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>06</td><td>MEDIDOR:</td><td id="val-medidor">-</td></tr>
+                    <tr><td>07</td><td>MARCA:</td><td id="val-marca">-</td></tr>
+                    <tr><td>08</td><td>SERIE:</td><td id="val-serie">-</td></tr>
+                    <tr><td>09</td><td>MESES DE DEUDA:</td><td id="val-meses-deuda">-</td></tr>
+                    <tr><td>10</td><td>DEUDA MIGRADA A SAP:</td><td id="val-deuda-sap">-</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info-card">
+            <div class="card-title">
+                CREDITO Y DEBITO CLIENTE: <span id="lbl-codigo-3"></span>
+            </div>
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>INDICE</th>
+                        <th>INFO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>11</td><td>FECHA:</td><td id="val-credito-fecha">-</td></tr>
+                    <tr><td>12</td><td>N° CREDITO:</td><td id="val-credito-num">-</td></tr>
+                    <tr><td>13</td><td>KWH:</td><td id="val-credito-kwh">-</td></tr>
+                    <tr><td>14</td><td>VALOR:</td><td id="val-credito-valor">-</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info-card">
+            <div class="card-title">
+                CONVENIOS CLIENTE: <span id="lbl-codigo-4"></span>
+            </div>
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>INDICE</th>
+                        <th>INFO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>15</td><td>FECHA:</td><td id="val-convenio-fecha">-</td></tr>
+                    <tr><td>16</td><td>OBSERVACION:</td><td id="val-convenio-obs">-</td></tr>
+                    <tr><td>17</td><td>VALOR:</td><td id="val-convenio-valor">-</td></tr>
+                    <tr><td>18</td><td>No PARTES:</td><td id="val-convenio-partes">-</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

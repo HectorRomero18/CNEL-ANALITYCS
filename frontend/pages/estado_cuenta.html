@@ -1,0 +1,45 @@
+{% extends "index.html" %}
+
+{% block title %}Estado de Cuenta - CNEL Analytics{% endblock %}
+
+{% block content %}
+<!-- MÓDULO: ESTADO DE CUENTA -->
+<section id="sec-estado-cuenta" class="content-section active">
+    <div class="section-header">
+        <div class="header-title">
+            <h3>ESTADO DE CUENTA</h3>
+            <span class="subtitle">Código de Cliente: <strong id="lbl-codigo-estcta">-</strong></span>
+        </div>
+        <div class="header-actions">
+            <div class="summary-badge">
+                <span>Saldo Actual: </span>
+                <strong id="lbl-saldo-total">$0.00</strong>
+            </div>
+            <button class="btn-export" onclick="exportarExcel()">
+                <i class="fa-solid fa-download"></i> Exportar
+            </button>
+        </div>
+    </div>
+
+    <!-- TABLA DE ESTADO DE CUENTA -->
+    <div class="info-card table-card">
+        <div class="card-title">
+            <i class="fa-solid fa-receipt"></i> HISTORIAL DE FACTURAS Y PAGOS
+        </div>
+        <div class="table-responsive">
+            <table class="custom-table" id="tabla-estado-cuenta">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>FECHA</th>
+                        <th>TIPO</th>
+                        <th>VALOR</th>
+                        <th>SALDO</th>
+                        <th>ESTADO</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

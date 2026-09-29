@@ -1,0 +1,52 @@
+{% extends "index.html" %}
+
+{% block title %}Historial de Consumo - CNEL Analytics{% endblock %}
+
+{% block content %}
+<!-- MÓDULO: HISTORIAL DE CONSUMO -->
+<section id="sec-consumo" class="content-section active">
+    <div class="section-header">
+        <div class="header-title">
+            <h3>HISTORIAL DE CONSUMO</h3>
+            <span class="subtitle">Código de Cliente: <strong id="lbl-codigo-consumo">-</strong></span>
+        </div>
+        <div class="header-actions">
+            <button class="btn-export" onclick="exportarExcel()">
+                <i class="fa-solid fa-download"></i> Exportar
+            </button>
+        </div>
+    </div>
+
+    <!-- GRÁFICO DE CONSUMO -->
+    <div class="info-card" style="margin-bottom: 20px;">
+        <div class="card-title">
+            <i class="fa-solid fa-chart-column"></i> TENDENCIA DE CONSUMO (kWh)
+        </div>
+        <div style="position: relative; height: 320px; width: 100%;">
+            <canvas id="chartConsumo"></canvas>
+        </div>
+    </div>
+
+    <!-- TABLA DE HISTORIAL DE CONSUMO -->
+    <div class="info-card table-card">
+        <div class="card-title">
+            <i class="fa-solid fa-bolt-lightning"></i> DETALLE DE CONSUMOS MENSUALES
+        </div>
+        <div class="table-responsive">
+            <table class="custom-table" id="tabla-consumo">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>PERÍODO / FECHA</th>
+                        <th>CONSUMO (kWh)</th>
+                        <th>VALOR ($)</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Script independiente para Consumo -->
+<script src="/static/js/consumo.js"></script>
+{% endblock %}
