@@ -1,10 +1,15 @@
 from pathlib import Path
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import FileResponse 
+from fastapi.responses import FileResponse, RedirectResponse
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 from app.core.decorators import login_required
+from app.db.session import get_local_db
+from app.routers import admin
+
 
 # Importar context processor
 from app.core.context_processors import inject_user
@@ -31,7 +36,7 @@ app.add_middleware(
 app.include_router(clientes.router)
 app.include_router(export.router)
 app.include_router(auth.router)
-
+app.include_router(admin.router)
 # Configuración de Rutas de Archivos
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -108,9 +113,14 @@ async def get_lectura(request: Request):
 
 @app.get("/config")
 @login_required
-async def get_config(request: Request):
+async def get_config(request: Request, db: Session = Depends(get_local_db)):
+    user = auth.get_current_user_optional(request=request, token_header=None, db=db)
+    if not user or user.get("rol", "").upper() not in ["ADMIN", "ADMINISTRADOR"]:
+        return RedirectResponse(url="/dashboard", status_code=303)
+
+    roles = db.execute(text("SELECT id, nombre FROM roles ORDER BY nombre")).fetchall()
     return templates.TemplateResponse(
         request=request, 
-        name="config.html", 
-        context={"active_page": "config"}
+        name="admin_usuarios.html", 
+        context={"active_page": "config", "roles": roles}
     )
