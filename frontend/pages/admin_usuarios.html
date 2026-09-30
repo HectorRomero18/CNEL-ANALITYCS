@@ -1,0 +1,86 @@
+{% extends "index.html" %}
+
+{% block title %}CNEL Analytics - Gestión de Usuarios{% endblock %}
+
+{% block content %}
+<div class="admin-card">
+    <div class="admin-card-header">
+        <span class="admin-card-title">GESTIÓN DE USUARIOS DEL SISTEMA</span>
+        <button class="btn-create" onclick="abrirModal()">
+            <i class="fa-solid fa-user-plus" aria-hidden="true"></i> NUEVO USUARIO
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>USUARIO</th>
+                    <th>CÉDULA</th>
+                    <th>NOMBRE COMPLETO</th>
+                    <th>EMAIL</th>
+                    <th>ROL</th>
+                    <th>ESTADO</th>
+                    <th>ACTIVAR/DESACTIVAR</th>
+                    <th>ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody id="usuariosTableBody">
+                <!-- Se llena mediante Javascript (AJAX) -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- MODAL PARA REGISTRO DE USUARIOS -->
+<div class="modal-overlay" id="modalUsuario">
+    <div class="modal-card">
+        <h3 class="modal-title" id="modalUsuarioTitle">Registrar Nuevo Usuario</h3>
+        <form id="formUsuario" onsubmit="guardarUsuario(event)">
+            <input type="hidden" name="usuario_id" id="usuario_id">
+            <div class="form-group">
+                <label>Nombre de Usuario</label>
+                <input type="text" name="username" id="usuario_username" required placeholder="Ej. mlopez">
+            </div>
+            <div class="form-group">
+                <label>Nombre Completo</label>
+                <input type="text" name="nombre_completo" id="usuario_nombre_completo" required placeholder="Ej. Marlene López">
+            </div>
+            <div class="form-group">
+                <label>Cédula de Identidad</label>
+                <input type="text" name="cedula_identidad" id="usuario_cedula" required
+                       inputmode="numeric" maxlength="10" autocomplete="off"
+                       placeholder="Ej. 1714453527"
+                       oninput="validarCedulaInput(this)"
+                       onblur="validarCedulaInput(this)">
+                <small class="form-hint" id="cedulaHint">10 dígitos. Provincia 01-24 y dígito verificador válido.</small>
+            </div>
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <input type="email" name="email" id="usuario_email" required placeholder="ejemplo@cnel.gob.ec">
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" name="password" id="usuario_password" placeholder="••••••••">
+                <small class="form-hint" id="passwordHint">Dejar vacío para no modificar la contraseña.</small>
+            </div>
+            <div class="form-group">
+                <label>Rol asignado</label>
+                <select name="rol_id" id="usuario_rol_id" required>
+                    <option value="" disabled selected>Seleccione un rol...</option>
+                    {% for r in roles %}
+                        <option value="{{ r.id }}">{{ r.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 25px;">
+                <button type="button" onclick="cerrarModal()" class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-create" id="btnGuardarUsuario">Guardar Usuario</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script src="/static/js/admin_usuarios.js"></script>
+{% endblock %}

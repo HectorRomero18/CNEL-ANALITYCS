@@ -49,10 +49,12 @@
                     <i class="fa-solid fa-gauge-high"></i>
                     <span>LECTURA</span>
                 </a>
+                {% if user and user.rol|upper in ['ADMIN', 'ADMINISTRADOR'] %}
                 <a href="/config" class="menu-item {% if active_page == 'config' %}active{% endif %}">
                     <i class="fa-solid fa-gear"></i>
                     <span>CONFIGURACION</span>
                 </a>
+                {% endif %}
                 <button class="menu-item logout" onclick="cerrarSesion()">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span>CERRAR SESION</span>

@@ -251,3 +251,267 @@ body {
 .content-section.active {
     display: block;
 }
+
+/* Estilos específicos para las tarjetas y tablas de administración */
+.admin-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
+    margin-top: 20px;
+}
+
+.admin-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.admin-card-title {
+    font-weight: 800;
+    color: #2b3674;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+.btn-create {
+    background-color: #4318ff;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.btn-create:hover {
+    background-color: #3311db;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th {
+    text-align: left;
+    font-size: 11px;
+    color: #a3aed0;
+    text-transform: uppercase;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e9edf7;
+}
+
+.admin-table td {
+    padding: 15px 0;
+    font-size: 13px;
+    color: #2b3674;
+    font-weight: 700;
+    border-bottom: 1px solid #f4f7fe;
+}
+
+/* Badges para Roles y Estados */
+.badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    display: inline-block;
+}
+
+.badge-role {
+    background-color: #f4f7fe;
+    color: #4318ff;
+}
+
+.badge-active {
+    background-color: #e6faf5;
+    color: #05cd99;
+}
+
+.badge-inactive {
+    background-color: #fde8e8;
+    color: #ee5d50;
+}
+
+/* Interruptor (Switch Toggle) para Activar/Desactivar */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #e9edf7;
+    transition: .3s;
+    border-radius: 20px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #05cd99;
+}
+
+input:checked + .slider:before {
+    transform: translateX(18px);
+}
+
+/* Modal emergente */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(11, 14, 38, 0.5);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 480px;
+    box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.18);
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #2b3674;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #2b3674;
+    margin-bottom: 6px;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #e9edf7;
+    border-radius: 12px;
+    outline: none;
+    font-size: 13px;
+    color: #2b3674;
+}
+
+.form-group input:focus, .form-group select:focus {
+    border-color: #4318ff;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #a3aed0;
+}
+
+.form-hint.hint-error {
+    color: #ee5d50;
+}
+
+.form-hint.hint-ok {
+    color: #05cd99;
+}
+
+.form-group input.input-error {
+    border-color: #ee5d50;
+}
+
+.form-group input.input-ok {
+    border-color: #05cd99;
+}
+
+.btn-cancel {
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: none;
+    background: #e9edf7;
+    color: #2b3674;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.btn-cancel:hover {
+    background: #dde3f2;
+}
+
+.acciones-cell {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: #f4f7fe;
+    color: #4318ff;
+    transition: background-color 0.2s;
+}
+
+.btn-icon i {
+    font-size: 15px;
+}
+
+.btn-icon:hover {
+    background: #e6eaff;
+}
+
+.btn-icon.btn-delete {
+    background: #fde8e8;
+    color: #ee5d50;
+}
+
+.btn-icon.btn-delete:hover {
+    background: #fbd5d3;
+}

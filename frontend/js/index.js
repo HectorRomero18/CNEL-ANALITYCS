@@ -228,8 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (userStr) {
             try {
                 const userObj = JSON.parse(userStr);
-                // Muestra nombre, primer_nombre o username según lo que exista
-                userNameElement.innerText = userObj.primer_nombre || userObj.nombre || userObj.username || 'Usuario';
+                userNameElement.innerText = userObj.username || userObj.primer_nombre || userObj.nombre || 'Usuario';
             } catch (e) {
                 userNameElement.innerText = userStr; // Si solo se guardó un string directo
             }
