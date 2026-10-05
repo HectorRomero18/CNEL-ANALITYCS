@@ -51,6 +51,6 @@ class Settings:
         """
         user = quote_plus(self.LOCAL_DB_USER)
         password = quote_plus(self.LOCAL_DB_PASSWORD)
-        return f"postgresql://{user}:{password}@{self.LOCAL_DB_HOST}:{self.LOCAL_DB_PORT}/{self.LOCAL_DB_NAME}"
+        return f"postgresql+psycopg2://{user}:{password}@{self.LOCAL_DB_HOST}:{self.LOCAL_DB_PORT}/{self.LOCAL_DB_NAME}"
 
 settings = Settings()
