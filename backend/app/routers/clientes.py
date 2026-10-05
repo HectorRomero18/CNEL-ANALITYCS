@@ -12,7 +12,7 @@ def obtener_cliente_completo(codigo_cliente: str, db: Session = Depends(get_db))
     """
     try:
         # 1. Datos Personales (RF-04)
-        query_cliente = text("SELECT codigo, nombre, cedula, direccion FROM Clientes WHERE codigo = :codigo")
+        query_cliente = text("SELECT a.cx_cliente, no_cliente, CI_CLIENTE, fx_instala, no_dirprinc FROM cmclient a, cmdattec b WHERE a.cx_cliente=b.cx_cliente AND a.cx_cliente = :codigo")
         cliente = db.execute(query_cliente, {"codigo": codigo_cliente}).mappings().first()
         
         if not cliente:
@@ -45,5 +45,5 @@ def obtener_cliente_completo(codigo_cliente: str, db: Session = Depends(get_db))
     except Exception as e:
         if isinstance(e, HTTPException):
             raise e
-        raise HTTPException(status_code=500, detail="Error de comunicación con la base de datos de CNEL EP.")
+        raise HTTPException(status_code=500, detail=str(e))
 
