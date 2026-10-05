@@ -27,11 +27,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>01</td><td>NOMBRE:</td><td id="val-nombre">-</td></tr>
-                    <tr><td>02</td><td>CEDULA:</td><td id="val-cedula">-</td></tr>
-                    <tr><td>03</td><td>FECHA DE INSTALACION:</td><td id="val-fecha-inst">-</td></tr>
-                    <tr><td>04</td><td>DIRECCION:</td><td id="val-direccion">-</td></tr>
-                    <tr><td>05</td><td>DEUDA MIGRADA A SICO:</td><td id="val-deuda-sico">-</td></tr>
+                    <tr><td>01</td><td>NOMBRE:</td><td id="val-nombre">{% if datos_personales %}{{ datos_personales.nombre or '-' }}{% else %}-{% endif %}</td></tr>
+                    <tr><td>02</td><td>CEDULA:</td><td id="val-cedula">{% if datos_personales %}{{ datos_personales.cedula or '-' }}{% else %}-{% endif %}</td></tr>
+                    <tr><td>03</td><td>FECHA DE INSTALACION:</td><td id="val-fecha-inst">{% if datos_personales %}{{ datos_personales.fecha_instalacion or '-' }}{% else %}-{% endif %}</td></tr>
+                    <tr><td>04</td><td>DIRECCION:</td><td id="val-direccion">{% if datos_personales %}{{ datos_personales.direccion or '-' }}{% else %}-{% endif %}</td></tr>
+                    <tr><td>05</td><td>DEUDA MIGRADA A SICO:</td><td id="val-deuda-sico">{% if datos_personales %}{{ datos_personales.deuda_sico or '-' }}{% else %}-{% endif %}</td></tr>
                 </tbody>
             </table>
         </div>
@@ -50,11 +50,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>06</td><td>MEDIDOR:</td><td id="val-medidor">-</td></tr>
-                    <tr><td>07</td><td>MARCA:</td><td id="val-marca">-</td></tr>
-                    <tr><td>08</td><td>SERIE:</td><td id="val-serie">-</td></tr>
-                    <tr><td>09</td><td>MESES DE DEUDA:</td><td id="val-meses-deuda">-</td></tr>
-                    <tr><td>10</td><td>DEUDA MIGRADA A SAP:</td><td id="val-deuda-sap">-</td></tr>
+                    <tr><td>06</td><td>MEDIDOR:</td><td id="val-medidor">{% if datos_personales %}{{ datos_personales.medidor or '-' }}{% else %}-{% endif %}</td></tr>
+                    <tr><td>07</td><td>MARCA:</td><td id="val-marca">{% if datos_personales %}{{ datos_personales.marca or '-' }}{% else %}-{% endif %}</td></tr>
+                    <tr><td>08</td><td>SERIE:</td><td id="val-serie">{% if datos_personales %}{{ datos_personales.serie or '-' }}{% else %}-{% endif %}</td></tr>
+                    <tr><td>09</td><td>MESES DE DEUDA:</td><td id="val-meses-deuda">{% if datos_personales %}{{ datos_personales.meses_deuda or '-' }}{% else %}-{% endif %}</td></tr>
+                    <tr><td>10</td><td>DEUDA MIGRADA A SAP:</td><td id="val-deuda-sap">{% if datos_personales %}{{ datos_personales.deuda_sap or '-' }}{% else %}-{% endif %}</td></tr>
                 </tbody>
             </table>
         </div>

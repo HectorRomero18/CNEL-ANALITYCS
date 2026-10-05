@@ -16,6 +16,7 @@ from app.core.context_processors import inject_user
 
 # Routers del backend
 from app.routers import clientes, export, auth
+from app.repositories.querys import obtener_cliente
 
 app = FastAPI(
     title="CNEL Analytics",
@@ -68,11 +69,19 @@ async def read_dashboard(request: Request):
 
 @app.get("/info-cliente")
 @login_required
-async def get_info_cliente(request: Request):
+async def get_info_cliente(request: Request, codigo: str = None, db: Session = Depends(get_local_db)):
+    context = {"active_page": "info-cliente"}
+    
+    if codigo:
+        datos_personales = obtener_cliente(db, codigo)
+        if datos_personales:
+            context["datos_personales"] = datos_personales
+            context["codigo_cliente"] = codigo
+    
     return templates.TemplateResponse(
         request=request, 
         name="info_cliente.html", 
-        context={"active_page": "info-cliente"}
+        context=context
     )
 
 @app.get("/estado-cuenta")

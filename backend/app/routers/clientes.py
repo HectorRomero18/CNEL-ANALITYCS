@@ -1,49 +1,56 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 from app.db.session import get_db
+from app.repositories.querys import (
+    obtener_cliente,
+    obtener_estado_cuenta,
+    obtener_estado_sico,
+    obtener_consumos,
+    obtener_lecturas
+)
+from app.schemas.cliente import ClienteCompletoResponse
 
 router = APIRouter(prefix="/api/clientes", tags=["Clientes"])
 
-@router.get("/{codigo_cliente}")
-def obtener_cliente_completo(codigo_cliente: str, db: Session = Depends(get_db)):
+
+@router.get("/{codigo_cliente}", response_model=ClienteCompletoResponse)
+def obtener_cliente_completo(
+    codigo_cliente: str,
+    db: Session = Depends(get_db)
+):
     """
-    Ejecuta consultas parametrizadas y seguras hacia SQL Server.
+    Obtiene información completa del cliente:
+    - Datos personales (RF-04)
+    - Estado de cuenta (RF-05)
+    - Estado SICO (RF-06)
+    - Consumos históricos (RF-07)
+    - Lecturas históricas (RF-08)
     """
     try:
-        # 1. Datos Personales (RF-04)
-        query_cliente = text("SELECT a.cx_cliente, no_cliente, CI_CLIENTE, fx_instala, no_dirprinc FROM cmclient a, cmdattec b WHERE a.cx_cliente=b.cx_cliente AND a.cx_cliente = :codigo")
-        cliente = db.execute(query_cliente, {"codigo": codigo_cliente}).mappings().first()
-        
-        if not cliente:
-            raise HTTPException(status_code=404, detail="El código de cliente no fue encontrado.")
-            
-        # 2. Estado de Cuenta (RF-05)
-        query_estado = text("SELECT id_factura, fecha_emision, valor, estado FROM EstadoCuenta WHERE codigo_cliente = :codigo")
-        estado_cuenta = db.execute(query_estado, {"codigo": codigo_cliente}).mappings().all()
+        cliente = obtener_cliente(db, codigo_cliente)
+    except SQLAlchemyError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error de base de datos al buscar cliente: {str(e)}"
+        )
 
-        # 3. Estado SICO (RF-06)
-        query_sico = text("SELECT fecha, estado_sico, observacion FROM EstadoSICO WHERE codigo_cliente = :codigo")
-        estado_sico = db.execute(query_sico, {"codigo": codigo_cliente}).mappings().all()
+    if not cliente:
+        raise HTTPException(
+            status_code=404,
+            detail="El código de cliente no fue encontrado."
+        )
 
-        # 4. Consumos Históricos (RF-07)
-        query_consumos = text("SELECT periodo, kwh FROM Consumos WHERE codigo_cliente = :codigo ORDER BY periodo DESC")
-        consumos = db.execute(query_consumos, {"codigo": codigo_cliente}).mappings().all()
-
-        # 5. Lecturas Históricas (RF-08)
-        query_lecturas = text("SELECT fecha_lectura, lectura_actual, tipo FROM Lecturas WHERE codigo_cliente = :codigo ORDER BY fecha_lectura DESC")
-        lecturas = db.execute(query_lecturas, {"codigo": codigo_cliente}).mappings().all()
-
+    try:
         return {
-            "datos_personales": dict(cliente),
-            "estado_cuenta": [dict(r) for r in estado_cuenta],
-            "estado_sico": [dict(r) for r in estado_sico],
-            "consumos": [dict(r) for r in consumos],
-            "lecturas": [dict(r) for r in lecturas]
+            "datos_personales": cliente,
+            "estado_cuenta": obtener_estado_cuenta(db, codigo_cliente),
+            "estado_sico": obtener_estado_sico(db, codigo_cliente),
+            "consumos": obtener_consumos(db, codigo_cliente),
+            "lecturas": obtener_lecturas(db, codigo_cliente)
         }
-
-    except Exception as e:
-        if isinstance(e, HTTPException):
-            raise e
-        raise HTTPException(status_code=500, detail=str(e))
-
+    except SQLAlchemyError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error de base de datos al obtener datos: {str(e)}"
+        )
