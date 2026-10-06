@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -12,9 +12,9 @@
 
     <!-- Panel Izquierdo Azul -->
     <div class="left-panel">
-        <div class="brand-icon">✻</div>
+        <div class="brand-icon"><img src="/static/img/logo.png" alt="Logo CNEL"></div>
         <div class="hero-text">
-            <h1>Hello<br>CNEL Analytics! 👋</h1>
+            <h1>Bienvenido a<br>CNEL Analytics!</h1>
             <p>Accede a la plataforma centralizada de gestión de usuarios, análisis comercial y monitoreo de consumo energético en tiempo real.</p>
         </div>
         <div class="footer-text">
@@ -25,27 +25,33 @@
     <!-- Panel Derecho Formulario -->
     <div class="right-panel">
         <div class="login-container">
-            <div class="app-title">CNEL Analytics</div>
+            
+            <!-- Grupo de Marca (Logo e Ícono a la Izquierda del Texto) -->
+            <div class="brand-container">
+                <div class="brand-icon">
+                    <img src="/static/img/logo.png" alt="Logo CNEL">
+                </div>
+                <div class="app-title">CNEL Analytics</div>
+            </div>
+        
 
             <div class="welcome-header">
-                <h2>Welcome Back!</h2>
-                <p>¿No tienes una cuenta? <a href="#">Solicitar acceso al administrador.</a></p>
+                <h2>Bienvenido de nuevo!</h2>
+                <p>Ingresa tus credenciales para acceder a tu cuenta.</p>
             </div>
 
             <form id="loginForm">
                 <div class="form-group">
                     <input type="text" id="username" placeholder="Usuario o Correo Electrónico" required autocomplete="username">
                 </div>
-                <div class="form-group">
+                <div class="form-group password-group">
                     <input type="password" id="password" placeholder="Contraseña" required autocomplete="current-password">
+                    <button type="button" class="password-toggle" id="passwordToggle" aria-label="Mostrar contraseña" aria-controls="password" aria-pressed="false">Mostrar</button>
                 </div>
 
-                <button type="submit" class="btn-submit" id="btnLogin">Login Now</button>
+                <button type="submit" class="btn-submit" id="btnLogin">Iniciar Sesión</button>
             </form>
 
-            <div class="forgot-link">
-                ¿Olvidaste tu contraseña? <a href="#">Click here</a>
-            </div>
         </div>
     </div>
 

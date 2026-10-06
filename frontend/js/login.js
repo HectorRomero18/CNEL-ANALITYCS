@@ -1,14 +1,31 @@
-document.addEventListener("DOMContentLoaded", () => {
+﻿document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("loginForm");
     const btnLogin = document.getElementById("btnLogin");
+    const passwordInput = document.getElementById("password");
+    const passwordToggle = document.getElementById("passwordToggle");
+
+    if (passwordInput && passwordToggle) {
+        const updatePasswordToggle = (isVisible) => {
+            passwordInput.type = isVisible ? "text" : "password";
+            passwordToggle.textContent = isVisible ? "Ocultar" : "Mostrar";
+            passwordToggle.setAttribute("aria-label", isVisible ? "Ocultar contraseña" : "Mostrar contraseña");
+            passwordToggle.setAttribute("aria-pressed", String(isVisible));
+        };
+
+        passwordToggle.addEventListener("click", (event) => {
+            event.preventDefault();
+            const isVisible = passwordInput.type === "text";
+            updatePasswordToggle(!isVisible);
+        });
+    }
 
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const usernameInput = document.getElementById("username").value.trim();
-        const passwordInput = document.getElementById("password").value.trim();
+        const passwordInputValue = document.getElementById("password").value.trim();
 
-        if (!usernameInput || !passwordInput) {
+        if (!usernameInput || !passwordInputValue) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Campos incompletos',
@@ -25,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Formato para OAuth2 (FastAPI exige multipart/form-data o urlencoded)
         const formData = new URLSearchParams();
         formData.append("username", usernameInput);
-        formData.append("password", passwordInput);
+        formData.append("password", passwordInputValue);
 
         try {
             const response = await fetch("/auth/login", {
@@ -68,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         } finally {
             btnLogin.disabled = false;
-            btnLogin.innerText = "Login Now";
+            btnLogin.innerText = "Ingresando...";
         }
     });
 });

@@ -74,9 +74,16 @@ def format_worksheet(worksheet, table_name: str, key_value: bool = False) -> Non
             if cell.row % 2 == 1:
                 cell.fill = PatternFill("solid", fgColor="F1F5FB")
             if cell.is_date:
-                cell.number_format = "dd/mm/yyyy hh:mm"
+                cell.number_format = "dd/mm/yyyy"
             elif isinstance(cell.value, (int, float)) and not isinstance(cell.value, bool):
                 cell.number_format = "#,##0.00" if isinstance(cell.value, float) else "#,##0"
+
+            if key_value:
+                cell.alignment = Alignment(
+                    horizontal="left" if cell.column == 1 else "right",
+                    vertical="center",
+                    wrap_text=True,
+                )
 
     if worksheet.max_column:
         worksheet.auto_filter.ref = worksheet.dimensions
@@ -105,6 +112,16 @@ def format_worksheet(worksheet, table_name: str, key_value: bool = False) -> Non
             showColumnStripes=False,
         )
         worksheet.add_table(table)
+
+    if not key_value:
+        saldo_columns = [
+            cell.column
+            for cell in worksheet[1]
+            if cell.value == "Saldo"
+        ]
+        for column_index in saldo_columns:
+            for row_index in range(2, worksheet.max_row + 1):
+                worksheet.cell(row=row_index, column=column_index).number_format = "0.00"
 
 
 @router.get("/excel/{codigo_cliente}")

@@ -1,4 +1,4 @@
-* {
+﻿* {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -12,6 +12,45 @@ body {
     overflow: hidden;
 }
 
+/* 1. Agrega o actualiza el contenedor padre que agrupa el ícono y el texto */
+.brand-container {
+    display: flex;
+    flex-direction: row;     /* Alinea ícono y texto horizontalmente */
+    align-items: center;      /* Centra verticalmente ambos elementos */
+    gap: 10px;               /* Espacio entre el ícono y el texto */
+}
+
+
+.brand-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.brand-icon {
+    width: 88px;
+    height: 42px;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-icon img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.app-title {
+    margin-top: 35.3px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
 /* Panel Izquierdo Azul */
 .left-panel {
     width: 50%;
@@ -103,24 +142,61 @@ body {
     text-decoration: underline;
 }
 
-/* Campos de entrada estilo Minimalista (Subrayado) */
+/* Campos de entrada estilo Minimalista */
 .form-group {
     margin-bottom: 25px;
+    position: relative;
 }
 
 .form-group input {
     width: 100%;
-    padding: 10px 0;
-    border: none;
-    border-bottom: 1px solid #cccccc;
+    padding: 14px 16px;
+    border: 1px solid #dfe3ea;
+    border-radius: 14px;
     font-size: 14px;
     outline: none;
-    transition: border-color 0.3s;
-    background: transparent;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    background-color: #f8fafc;
+    color: #111111;
+}
+
+.form-group input::placeholder {
+    color: #737c8b;
 }
 
 .form-group input:focus {
-    border-bottom-color: #111111;
+    border-color: #2d5bdd;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(45, 91, 221, 0.12);
+}
+
+.password-group input {
+    padding-right: 110px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #2d5bdd;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    z-index: 1;
+}
+
+.password-toggle:hover,
+.password-toggle:focus-visible {
+    background-color: rgba(45, 91, 221, 0.08);
+    color: #1d4ed8;
+    outline: none;
 }
 
 .btn-submit {
@@ -153,4 +229,24 @@ body {
     color: #111111;
     font-weight: 700;
     text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    body {
+        overflow-y: auto;
+        min-height: 100vh;
+    }
+
+    .left-panel {
+        display: none;
+    }
+
+    .right-panel {
+        width: 100%;
+        padding: 32px 20px;
+    }
+
+    .login-container {
+        max-width: 100%;
+    }
 }
