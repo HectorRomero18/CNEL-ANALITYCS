@@ -1,13 +1,15 @@
 from pathlib import Path
 from fastapi import Depends, FastAPI, Request
+from fastapi.encoders import jsonable_encoder
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse, JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import OperationalError
 from app.core.decorators import login_required
-from app.db.session import get_local_db
+from app.db.session import get_db, get_local_db
 from app.routers import admin
 
 
@@ -16,7 +18,6 @@ from app.core.context_processors import inject_user
 
 # Routers del backend
 from app.routers import clientes, export, auth
-from app.repositories.querys import obtener_cliente
 
 app = FastAPI(
     title="CNEL Analytics",
@@ -32,6 +33,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Exception handler para errores de conexión a BD
+@app.exception_handler(OperationalError)
+async def db_operational_error_handler(request: Request, exc: OperationalError):
+    return JSONResponse(
+        status_code=503,
+        content={"detail": f"Error de conexión a base de datos: {str(exc)}"}
+    )
 
 # Rutas del Backend (API)
 app.include_router(clientes.router)
@@ -69,13 +78,13 @@ async def read_dashboard(request: Request):
 
 @app.get("/info-cliente")
 @login_required
-async def get_info_cliente(request: Request, codigo: str = None, db: Session = Depends(get_local_db)):
+async def get_info_cliente(request: Request, codigo: str = None, db: Session = Depends(get_db)):
     context = {"active_page": "info-cliente"}
     
     if codigo:
-        datos_personales = obtener_cliente(db, codigo)
-        if datos_personales:
-            context["datos_personales"] = datos_personales
+        datos_cliente = clientes.obtener_cliente_completo(codigo, db)
+        if datos_cliente:
+            context["initial_data"] = jsonable_encoder(datos_cliente)
             context["codigo_cliente"] = codigo
     
     return templates.TemplateResponse(

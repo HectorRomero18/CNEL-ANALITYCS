@@ -30,16 +30,21 @@
                         <th>FECHA LECTURA</th>
                         <th>MEDIDOR</th>
                         <th>LECTURA ANTERIOR</th>
-                        <th>LECTURA ACTUAL</th>
+                        <th>LECTURA TOMADA</th>
+                        <th>LECTURA FACTURADA</th>
                         <th>CONSUMO (kWh)</th>
                         <th>TIPO LECTURA</th>
+                        <th>OBSERVACIÓN</th>
                     </tr>
                 </thead>
+                <tbody id="tbody-lectura">
+                    <tr><td colspan="9" class="empty-state">Busque un cliente para ver sus lecturas.</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
 </section>
 
 <!-- Script independiente para Lectura -->
-<script src="/static/js/lectura.js"></script>
+<script src="/static/js/lectura.js?v=20261006-2"></script>
 {% endblock %}

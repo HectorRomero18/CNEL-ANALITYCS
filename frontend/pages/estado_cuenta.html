@@ -31,15 +31,23 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>FECHA</th>
-                        <th>TIPO</th>
+                        <th>FECHA DEL EVENTO</th>
+                        <th>TIPO EVENTO</th>
+                        <th>CÓDIGO EVENTO</th>
+                        <th>FACTURA</th>
                         <th>VALOR</th>
                         <th>SALDO</th>
-                        <th>ESTADO</th>
                     </tr>
                 </thead>
+                <tbody id="tbody-estado-cuenta">
+                    <tr><td colspan="7" class="empty-state">Busque un cliente para ver sus movimientos.</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/estado_cuenta.js?v=20261006-2"></script>
 {% endblock %}

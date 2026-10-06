@@ -4,6 +4,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.db.session import get_db
 from app.repositories.querys import (
     obtener_cliente,
+    obtener_creditos_debitos,
+    obtener_convenios,
     obtener_estado_cuenta,
     obtener_estado_sico,
     obtener_consumos,
@@ -22,6 +24,7 @@ def obtener_cliente_completo(
     """
     Obtiene información completa del cliente:
     - Datos personales (RF-04)
+    - Notas de crédito/débito y convenios
     - Estado de cuenta (RF-05)
     - Estado SICO (RF-06)
     - Consumos históricos (RF-07)
@@ -44,6 +47,8 @@ def obtener_cliente_completo(
     try:
         return {
             "datos_personales": cliente,
+            "creditos_debitos": obtener_creditos_debitos(db, codigo_cliente),
+            "convenios": obtener_convenios(db, codigo_cliente),
             "estado_cuenta": obtener_estado_cuenta(db, codigo_cliente),
             "estado_sico": obtener_estado_sico(db, codigo_cliente),
             "consumos": obtener_consumos(db, codigo_cliente),

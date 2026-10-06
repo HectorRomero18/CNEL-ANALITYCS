@@ -37,16 +37,20 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>PERÍODO / FECHA</th>
-                        <th>CONSUMO (kWh)</th>
-                        <th>VALOR ($)</th>
+                        <th>PERÍODO (AAAAMM)</th>
+                        <th>ENERGÍA ACTIVA (kWh)</th>
+                        <th>ENERGÍA REACTIVA (kvarh)</th>
+                        <th>DÍAS FACTURADOS</th>
                     </tr>
                 </thead>
+                <tbody id="tbody-consumo">
+                    <tr><td colspan="5" class="empty-state">Busque un cliente para ver sus consumos.</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
 </section>
 
 <!-- Script independiente para Consumo -->
-<script src="/static/js/consumo.js"></script>
+<script src="/static/js/consumo.js?v=20261006-2"></script>
 {% endblock %}

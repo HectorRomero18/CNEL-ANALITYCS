@@ -3,7 +3,66 @@
    2. LÓGICA DEL DASHBOARD DE CONSULTAS (main.js / index.js)
    ========================================================================== */
 let clienteActual = null;
-let chartConsumosInstance = null;
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[character]);
+}
+
+function displayValue(value, fallback = '-') {
+    if (value === null || value === undefined || String(value).trim() === '') {
+        return fallback;
+    }
+    return String(value).trim();
+}
+
+function displayDate(value) {
+    const date = displayValue(value, '');
+    return date ? date.split('T')[0] : '-';
+}
+
+function setText(id, value, fallback = '-') {
+    const element = document.getElementById(id);
+    if (element) element.textContent = displayValue(value, fallback);
+}
+
+function applyClientData(data, codigo) {
+    clienteActual = codigo;
+    localStorage.setItem('clienteActual', codigo);
+    sessionStorage.setItem('datosCliente', JSON.stringify(data));
+    const searchInput = document.getElementById('codigoUsuario');
+    if (searchInput) searchInput.value = codigo;
+
+    ['lbl-codigo-1', 'lbl-codigo-2', 'lbl-codigo-3', 'lbl-codigo-4',
+        'lbl-codigo-estcta', 'lbl-codigo-sico', 'lbl-codigo-consumo',
+        'lbl-codigo-lectura'].forEach(id => setText(id, codigo));
+
+    const cliente = data.datos_personales || {};
+    setText('val-nombre', cliente.nombre);
+    setText('val-cedula', cliente.cedula);
+    setText('val-fecha-inst', displayDate(cliente.fecha_instalacion));
+    setText('val-direccion', cliente.direccion);
+    setText('val-telefono', cliente.telefono);
+    setText('val-consumo-promedio', cliente.consumo_promedio);
+    setText('val-deuda-sico', cliente.deuda_sico, 'Sin campo confirmado en la BD externa');
+    setText('val-medidor', cliente.medidor);
+    setText('val-marca', cliente.marca);
+    setText('val-serie', cliente.serie);
+    setText('val-modelo-medidor', cliente.modelo_medidor);
+    setText('val-meses-deuda', cliente.meses_deuda);
+    setText('val-deuda-sap', cliente.deuda_sap);
+
+    if (typeof renderInfoCliente === 'function') renderInfoCliente(data);
+    if (typeof renderEstadoCuenta === 'function') renderEstadoCuenta(data);
+    if (typeof renderEstctaSico === 'function') renderEstctaSico(data);
+    if (typeof renderConsumo === 'function') renderConsumo(data);
+    if (typeof renderLectura === 'function') renderLectura(data);
+}
 
 // Control del menú de navegación lateral
 function showSection(sectionName) {
@@ -65,41 +124,25 @@ async function buscarCliente() {
                 return;
             }
 
-            const err = await response.json();
+            const responseText = await response.text();
+            let errorDetail = `Error HTTP ${response.status}`;
+            try {
+                const errorData = JSON.parse(responseText);
+                errorDetail = errorData.detail || errorDetail;
+            } catch {
+                if (responseText) errorDetail = responseText;
+            }
             Swal.fire({
                 icon: 'error',
                 title: 'No encontrado',
-                text: err.detail || 'No se encontraron registros para el código ingresado.',
+                text: errorDetail,
                 confirmColor: '#6366F1'
             });
             return;
         }
 
         const data = await response.json();
-        clienteActual = codigoInput;
-
-        // Rellenar etiquetas de código
-        document.getElementById("lbl-codigo-1").innerText = codigoInput;
-        document.getElementById("lbl-codigo-2").innerText = codigoInput;
-
-        // Rellenar tablas con datos devueltos por la API
-        const dp = data.datos_personales || {};
-        document.getElementById("val-nombre").innerText = dp.nombre || '-';
-        document.getElementById("val-cedula").innerText = dp.cedula || '-';
-        document.getElementById("val-fecha-inst").innerText = dp.fecha_instalacion || '-';
-        document.getElementById("val-direccion").innerText = dp.direccion || '-';
-        document.getElementById("val-deuda-sico").innerText = dp.deuda_sico || '-';
-
-        document.getElementById("val-medidor").innerText = dp.medidor || '-';
-        document.getElementById("val-marca").innerText = dp.marca || '-';
-        document.getElementById("val-serie").innerText = dp.serie || '-';
-        document.getElementById("val-meses-deuda").innerText = dp.meses_deuda || '-';
-        document.getElementById("val-deuda-sap").innerText = dp.deuda_sap || '-';
-
-        // Renderizar gráfico si hay datos de consumo
-        if (data.consumos && data.consumos.length > 0) {
-            renderConsumoChart(data.consumos);
-        }
+        applyClientData(data, codigoInput);
 
         // Notificación Toast
         Swal.fire({
@@ -114,37 +157,21 @@ async function buscarCliente() {
 
     } catch (error) {
         console.error(error);
+        let errorMessage = 'No se pudo conectar con el servidor backend.';
+
+        if (error instanceof TypeError && error.message.includes('fetch')) {
+            errorMessage = 'Error de red: Verifique que el backend esté ejecutándose y la VPN/conexión a la base de datos esté activa.';
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+
         Swal.fire({
             icon: 'error',
             title: 'Error de comunicación',
-            text: 'No se pudo conectar con el servidor backend.',
+            text: errorMessage,
             confirmColor: '#6366F1'
         });
     }
-}
-
-// Renderizado del gráfico Chart.js
-function renderConsumoChart(consumos) {
-    const ctx = document.getElementById('chartConsumo').getContext('2d');
-    if (chartConsumosInstance) chartConsumosInstance.destroy();
-
-    const labels = consumos.map(c => c.periodo).reverse();
-    const values = consumos.map(c => c.kwh).reverse();
-
-    chartConsumosInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Consumo (kWh)',
-                data: values,
-                borderColor: '#6366F1',
-                backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                fill: true,
-                tension: 0.3
-            }]
-        }
-    });
 }
 
 // Confirmación para exportar reporte
@@ -232,6 +259,21 @@ document.addEventListener("DOMContentLoaded", () => {
             } catch (e) {
                 userNameElement.innerText = userStr; // Si solo se guardó un string directo
             }
+        }
+    }
+
+    const storedData = sessionStorage.getItem('datosCliente');
+    const storedCode = localStorage.getItem('clienteActual');
+    const initialData = window.initialClienteData;
+    if (initialData) {
+        applyClientData(initialData, initialData.datos_personales.codigo_cliente);
+    } else if (storedData && storedCode) {
+        try {
+            applyClientData(JSON.parse(storedData), storedCode);
+            const input = document.getElementById('codigoUsuario');
+            if (input) input.value = storedCode;
+        } catch (error) {
+            console.error('No se pudieron restaurar los datos del cliente:', error);
         }
     }
 });

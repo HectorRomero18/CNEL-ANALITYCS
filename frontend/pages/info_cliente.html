@@ -6,7 +6,7 @@
 <!-- MÓDULO: INFORMACIÓN CLIENTE -->
 <section id="sec-info-cliente" class="content-section active">
     <div class="section-header">
-        <h3>INFORMACION CLIENTE</h3>
+        <h3>INFORMACION CLIENTE: <span id="lbl-codigo-2"></span></h3>
         <button class="btn-export" onclick="exportarExcel()">
             <i class="fa-solid fa-download"></i> Exportar
         </button>
@@ -16,22 +16,27 @@
         <!-- Columna Izquierda -->
         <div class="info-card">
             <div class="card-title">
-                INFO CLIENTE: <span id="lbl-codigo-1"></span>
+                INFO CLIENTE
             </div>
-            <table class="custom-table">
+            <table class="custom-table info-cliente-fields">
+                <colgroup>
+                    <col style="width: 42%;">
+                    <col style="width: 58%;">
+                </colgroup>
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>INDICE</th>
-                        <th>INFO</th>
+                        <th>CAMPO</th>
+                        <th>VALOR</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>01</td><td>NOMBRE:</td><td id="val-nombre">{% if datos_personales %}{{ datos_personales.nombre or '-' }}{% else %}-{% endif %}</td></tr>
-                    <tr><td>02</td><td>CEDULA:</td><td id="val-cedula">{% if datos_personales %}{{ datos_personales.cedula or '-' }}{% else %}-{% endif %}</td></tr>
-                    <tr><td>03</td><td>FECHA DE INSTALACION:</td><td id="val-fecha-inst">{% if datos_personales %}{{ datos_personales.fecha_instalacion or '-' }}{% else %}-{% endif %}</td></tr>
-                    <tr><td>04</td><td>DIRECCION:</td><td id="val-direccion">{% if datos_personales %}{{ datos_personales.direccion or '-' }}{% else %}-{% endif %}</td></tr>
-                    <tr><td>05</td><td>DEUDA MIGRADA A SICO:</td><td id="val-deuda-sico">{% if datos_personales %}{{ datos_personales.deuda_sico or '-' }}{% else %}-{% endif %}</td></tr>
+                    <tr><td>NOMBRE</td><td id="val-nombre">-</td></tr>
+                    <tr><td>CÉDULA</td><td id="val-cedula">-</td></tr>
+                    <tr><td>FECHA INSTALACIÓN</td><td id="val-fecha-inst">-</td></tr>
+                    <tr><td>DIRECCIÓN</td><td id="val-direccion">-</td></tr>
+                    <tr><td>TELÉFONO</td><td id="val-telefono">-</td></tr>
+                    <tr><td>CONSUMO PROMEDIO (kWh)</td><td id="val-consumo-promedio">-</td></tr>
+                    <tr><td>DEUDA SICO</td><td id="val-deuda-sico">Sin campo confirmado en la BD externa</td></tr>
                 </tbody>
             </table>
         </div>
@@ -39,67 +44,77 @@
         <!-- Columna Derecha -->
         <div class="info-card">
             <div class="card-title">
-                DATOS PRINCIPALES: <span id="lbl-codigo-2"></span>
+                DATOS PRINCIPALES
             </div>
-            <table class="custom-table">
+            <table class="custom-table info-cliente-fields">
+                <colgroup>
+                    <col style="width: 42%;">
+                    <col style="width: 58%;">
+                </colgroup>
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>INDICE</th>
-                        <th>INFO</th>
+                        <th>CAMPO</th>
+                        <th>VALOR</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>06</td><td>MEDIDOR:</td><td id="val-medidor">{% if datos_personales %}{{ datos_personales.medidor or '-' }}{% else %}-{% endif %}</td></tr>
-                    <tr><td>07</td><td>MARCA:</td><td id="val-marca">{% if datos_personales %}{{ datos_personales.marca or '-' }}{% else %}-{% endif %}</td></tr>
-                    <tr><td>08</td><td>SERIE:</td><td id="val-serie">{% if datos_personales %}{{ datos_personales.serie or '-' }}{% else %}-{% endif %}</td></tr>
-                    <tr><td>09</td><td>MESES DE DEUDA:</td><td id="val-meses-deuda">{% if datos_personales %}{{ datos_personales.meses_deuda or '-' }}{% else %}-{% endif %}</td></tr>
-                    <tr><td>10</td><td>DEUDA MIGRADA A SAP:</td><td id="val-deuda-sap">{% if datos_personales %}{{ datos_personales.deuda_sap or '-' }}{% else %}-{% endif %}</td></tr>
+                    <tr><td>MEDIDOR</td><td id="val-medidor">-</td></tr>
+                    <tr><td>MARCA</td><td id="val-marca">-</td></tr>
+                    <tr><td>SERIE</td><td id="val-serie">-</td></tr>
+                    <tr><td>MODELO</td><td id="val-modelo-medidor">-</td></tr>
+                    <tr><td>MESES DE DEUDA</td><td id="val-meses-deuda">-</td></tr>
+                    <tr><td>DEUDA SAP</td><td id="val-deuda-sap">-</td></tr>
                 </tbody>
             </table>
         </div>
 
         <div class="info-card">
             <div class="card-title">
-                CREDITO Y DEBITO CLIENTE: <span id="lbl-codigo-3"></span>
+                CREDITO Y DEBITO CLIENTE
             </div>
             <table class="custom-table">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>INDICE</th>
-                        <th>INFO</th>
+                        <th>FECHA CÁLCULO</th>
+                        <th>N° NOTA</th>
+                        <th>kWh</th>
+                        <th>VALOR</th>
+                        <th>TIPO CARGO</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr><td>11</td><td>FECHA:</td><td id="val-credito-fecha">-</td></tr>
-                    <tr><td>12</td><td>N° CREDITO:</td><td id="val-credito-num">-</td></tr>
-                    <tr><td>13</td><td>KWH:</td><td id="val-credito-kwh">-</td></tr>
-                    <tr><td>14</td><td>VALOR:</td><td id="val-credito-valor">-</td></tr>
+                <tbody id="tbody-creditos-debitos">
+                    <tr><td colspan="5" class="empty-state">Sin registros para este cliente.</td></tr>
                 </tbody>
             </table>
         </div>
 
         <div class="info-card">
             <div class="card-title">
-                CONVENIOS CLIENTE: <span id="lbl-codigo-4"></span>
+                CONVENIOS CLIENTE
             </div>
             <table class="custom-table">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>INDICE</th>
-                        <th>INFO</th>
+                        <th>FECHA</th>
+                        <th>DEUDA</th>
+                        <th>SALDO PENDIENTE</th>
+                        <th>N° PARTES</th>
+                        <th>ESTADO</th>
+                        <th>OBSERVACIÓN</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr><td>15</td><td>FECHA:</td><td id="val-convenio-fecha">-</td></tr>
-                    <tr><td>16</td><td>OBSERVACION:</td><td id="val-convenio-obs">-</td></tr>
-                    <tr><td>17</td><td>VALOR:</td><td id="val-convenio-valor">-</td></tr>
-                    <tr><td>18</td><td>No PARTES:</td><td id="val-convenio-partes">-</td></tr>
+                <tbody id="tbody-convenios">
+                    <tr><td colspan="6" class="empty-state">Sin convenios para este cliente.</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    window.initialClienteData = {{ initial_data | tojson if initial_data else 'null' }};
+</script>
+<script src="/static/js/info_cliente.js?v=20261006-2"></script>
 {% endblock %}
