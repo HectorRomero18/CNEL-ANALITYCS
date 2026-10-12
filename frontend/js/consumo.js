@@ -3,16 +3,74 @@
    ========================================================================== */
 
 let consumoChartInstance = null;
+let consumosActuales = [];
+let consumoAnioFiltrado = '';
 
 /**
  * Renderiza la tabla de consumos y genera el gráfico dinámico con Chart.js.
  * @param {Object} data Objeto JSON retornado por la API del backend.
  */
 function renderConsumo(data) {
+    consumosActuales = data.consumos || [];
+    const filtrosGuardados = leerFiltrosModulo('consumo');
+    consumoAnioFiltrado = filtrosGuardados.anio || '';
+    const filtroAnio = document.getElementById("filtro-anio-consumo");
+    if (filtroAnio) {
+        const anios = [...new Set(consumosActuales
+            .map(item => obtenerAnioConsumo(item.periodo))
+            .filter(Boolean))].sort((a, b) => b - a);
+        filtroAnio.innerHTML = '<option value="">Todos los años</option>' +
+            anios.map(anio => `<option value="${anio}">${anio}</option>`).join('');
+        if (![...filtroAnio.options].some(option => option.value === consumoAnioFiltrado)) {
+            consumoAnioFiltrado = '';
+            guardarFiltrosModulo('consumo', { anio: '' });
+        }
+        filtroAnio.value = consumoAnioFiltrado;
+    }
+    actualizarBotonLimpiarConsumo();
+    mostrarConsumoFiltrado(consumoAnioFiltrado);
+}
+
+function filtrarConsumoPorAnio(anio) {
+    consumoAnioFiltrado = anio || '';
+    guardarFiltrosModulo('consumo', { anio: consumoAnioFiltrado });
+    actualizarBotonLimpiarConsumo();
+    mostrarConsumoFiltrado(anio);
+}
+
+function actualizarBotonLimpiarConsumo() {
+    const btn = document.getElementById('btn-limpiar-filtro-consumo');
+    if (btn) btn.hidden = !consumoAnioFiltrado;
+}
+
+function limpiarFiltroConsumo() {
+    consumoAnioFiltrado = '';
+    const filtroAnio = document.getElementById('filtro-anio-consumo');
+    if (filtroAnio) filtroAnio.value = '';
+    guardarFiltrosModulo('consumo', { anio: '' });
+    actualizarBotonLimpiarConsumo();
+    mostrarConsumoFiltrado('');
+}
+
+function obtenerAnioConsumo(periodo) {
+    const valor = displayValue(periodo, '');
+    const anioInicial = valor.match(/^((?:19|20)\d{2})(?:\d{2}|[-/]|$)/);
+    const anioSeparado = valor.match(/(?:^|[^\d])((?:19|20)\d{2})(?=$|[^\d])/);
+    return anioInicial ? anioInicial[1] : (anioSeparado ? anioSeparado[1] : '');
+}
+
+function mostrarConsumoFiltrado(anio) {
     const tbody = document.getElementById("tbody-consumo");
     const canvasChart = document.getElementById("chartConsumo");
 
-    const consumos = data.consumos || [];
+    const consumos = anio
+        ? consumosActuales.filter(item => obtenerAnioConsumo(item.periodo) === anio)
+        : consumosActuales;
+
+    if (consumoChartInstance) {
+        consumoChartInstance.destroy();
+        consumoChartInstance = null;
+    }
 
     // 1. Renderizado de la Tabla
     if (tbody) {
@@ -34,11 +92,6 @@ function renderConsumo(data) {
     // 2. Renderizado del Gráfico (Chart.js)
     if (canvasChart && consumos.length > 0) {
         const ctx = canvasChart.getContext('2d');
-
-        // Destruir la instancia previa para evitar duplicación al recargar datos
-        if (consumoChartInstance) {
-            consumoChartInstance.destroy();
-        }
 
         // Invertimos los datos para mostrarlos cronológicamente (pasado -> presente)
         const labels = consumos.map(c => c.periodo || '-').reverse();

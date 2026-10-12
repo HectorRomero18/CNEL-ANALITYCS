@@ -246,6 +246,148 @@ body {
     color: var(--accent-blue);
 }
 
+.year-filter {
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(203, 213, 225, 0.7);
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: #64748B;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.header-actions-filter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+}
+
+.filter-menu {
+    position: relative;
+}
+
+.btn-filter,
+.btn-apply-filter,
+.btn-clear-filter {
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(203, 213, 225, 0.7);
+    padding: 8px 14px;
+    border-radius: 6px;
+    color: #64748B;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.btn-filter:hover,
+.btn-apply-filter:hover,
+.btn-clear-filter:hover {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+.btn-apply-filter {
+    width: 100%;
+    margin-top: 8px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(56, 189, 248, 0.12));
+}
+
+.filter-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 20;
+    min-width: 220px;
+    display: grid;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
+}
+
+.filter-panel[hidden] {
+    display: none;
+}
+
+.btn-clear-filter[hidden] {
+    display: none;
+}
+
+.btn-clear-filter {
+    background: rgba(254, 242, 242, 0.8);
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    padding: 8px 14px;
+    border-radius: 6px;
+    color: #B91C1C;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-clear-filter:hover {
+    background: #FEF2F2;
+    border-color: #DC2626;
+    color: #991B1B;
+}
+
+.filter-field {
+    display: grid;
+    gap: 6px;
+}
+
+.filter-field label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748B;
+    letter-spacing: 0.4px;
+}
+
+.filter-select,
+.year-filter {
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(203, 213, 225, 0.7);
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: #64748B;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+@media (max-width: 700px) {
+    .header-actions-filter {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .filter-menu {
+        order: 1;
+    }
+
+    .filter-panel {
+        right: auto;
+        left: 0;
+        min-width: min(220px, calc(100vw - 80px));
+    }
+}
+
 
 /* =========================================================
    CARDS Y TABLAS

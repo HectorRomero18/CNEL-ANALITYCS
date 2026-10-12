@@ -10,11 +10,34 @@
             <h3>ESTADO DE CUENTA</h3>
             <span class="subtitle">Código de Cliente: <strong id="lbl-codigo-estcta">-</strong></span>
         </div>
-        <div class="header-actions">
+        <div class="header-actions header-actions-filter">
             <div class="summary-badge">
                 <span>Saldo Actual: </span>
                 <strong id="lbl-saldo-total">$0.00</strong>
             </div>
+            <div class="filter-menu">
+                <button type="button" id="btn-filtro-estado-cuenta" class="btn-filter" aria-expanded="false" aria-controls="panel-filtro-estado-cuenta">
+                    <i class="fa-solid fa-filter"></i> Filtrar
+                </button>
+                <div id="panel-filtro-estado-cuenta" class="filter-panel" hidden>
+                    <div class="filter-field">
+                        <label for="filtro-anio-estado-cuenta">Años</label>
+                        <select id="filtro-anio-estado-cuenta" class="filter-select" aria-label="Seleccionar año">
+                            <option value="">Todos los años</option>
+                        </select>
+                    </div>
+                    <div class="filter-field">
+                        <label for="filtro-tipo-estado-cuenta">Tipo</label>
+                        <select id="filtro-tipo-estado-cuenta" class="filter-select" aria-label="Seleccionar tipo de evento">
+                            <option value="">Todos los tipos</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-apply-filter" onclick="aplicarFiltrosEstadoCuenta()">Aplicar filtros</button>
+                </div>
+            </div>
+            <button type="button" id="btn-limpiar-filtro-estado-cuenta" class="btn-clear-filter" onclick="limpiarFiltrosEstadoCuenta()" hidden>
+                <i class="fa-solid fa-filter-circle-xmark"></i> Limpiar filtro
+            </button>
             <button class="btn-export" onclick="exportarExcel()">
                 <i class="fa-solid fa-download"></i> Exportar
             </button>
@@ -49,5 +72,8 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="/static/js/estado_cuenta.js?v=20261006-2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
+<script src="/static/js/estado_cuenta.js?v=20261012-5"></script>
 {% endblock %}

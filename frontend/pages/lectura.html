@@ -10,7 +10,30 @@
             <h3>HISTORIAL DE LECTURAS</h3>
             <span class="subtitle">Código de Cliente: <strong id="lbl-codigo-lectura">-</strong></span>
         </div>
-        <div class="header-actions">
+        <div class="header-actions header-actions-filter">
+            <div class="filter-menu">
+                <button type="button" id="btn-filtro-lectura" class="btn-filter" aria-expanded="false" aria-controls="panel-filtro-lectura">
+                    <i class="fa-solid fa-filter"></i> Filtrar
+                </button>
+                <div id="panel-filtro-lectura" class="filter-panel" hidden>
+                    <div class="filter-field">
+                        <label for="filtro-anio-lectura">Años</label>
+                        <select id="filtro-anio-lectura" class="filter-select" aria-label="Seleccionar año">
+                            <option value="">Todos los años</option>
+                        </select>
+                    </div>
+                    <div class="filter-field">
+                        <label for="filtro-tipo-lectura">Tipo</label>
+                        <select id="filtro-tipo-lectura" class="filter-select" aria-label="Seleccionar tipo de lectura">
+                            <option value="">Todos los tipos</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-apply-filter" onclick="aplicarFiltrosLectura()">Aplicar filtros</button>
+                </div>
+            </div>
+            <button type="button" id="btn-limpiar-filtro-lectura" class="btn-clear-filter" onclick="limpiarFiltrosLectura()" hidden>
+                <i class="fa-solid fa-filter-circle-xmark"></i> Limpiar filtro
+            </button>
             <button class="btn-export" onclick="exportarExcel()">
                 <i class="fa-solid fa-download"></i> Exportar
             </button>
@@ -46,5 +69,8 @@
 </section>
 
 <!-- Script independiente para Lectura -->
-<script src="/static/js/lectura.js?v=20261006-2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
+<script src="/static/js/lectura.js?v=20261012-5"></script>
 {% endblock %}
