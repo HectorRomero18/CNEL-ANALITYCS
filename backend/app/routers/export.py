@@ -8,6 +8,7 @@ import pandas as pd
 import io
 from app.db.session import get_db
 from app.routers.clientes import obtener_cliente_completo
+from app.routers.auth import get_current_user
 
 router = APIRouter(prefix="/api/export", tags=["Exportación"])
 
@@ -123,8 +124,10 @@ def format_worksheet(worksheet, table_name: str, key_value: bool = False) -> Non
             for row_index in range(2, worksheet.max_row + 1):
                 worksheet.cell(row=row_index, column=column_index).number_format = "0.00"
 
-
-@router.get("/excel/{codigo_cliente}")
+@router.get(
+    "/excel/{codigo_cliente}",
+    dependencies=[Depends(get_current_user)],
+)
 def exportar_excel(codigo_cliente: str, db: Session = Depends(get_db)):
     data = obtener_cliente_completo(codigo_cliente, db)
     
@@ -162,5 +165,8 @@ def exportar_excel(codigo_cliente: str, db: Session = Depends(get_db)):
     return StreamingResponse(
         output,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}",
+            "Cache-Control": "no-store",
+        },
     )

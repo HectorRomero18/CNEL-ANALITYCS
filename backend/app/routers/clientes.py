@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from app.db.session import get_db
+from app.routers.auth import get_current_user
 from app.repositories.querys import (
     obtener_cliente,
     obtener_creditos_debitos,
@@ -15,8 +16,11 @@ from app.schemas.cliente import ClienteCompletoResponse
 
 router = APIRouter(prefix="/api/clientes", tags=["Clientes"])
 
-
-@router.get("/{codigo_cliente}", response_model=ClienteCompletoResponse)
+@router.get(
+    "/{codigo_cliente}",
+    response_model=ClienteCompletoResponse,
+    dependencies=[Depends(get_current_user)],
+)
 def obtener_cliente_completo(
     codigo_cliente: str,
     db: Session = Depends(get_db)

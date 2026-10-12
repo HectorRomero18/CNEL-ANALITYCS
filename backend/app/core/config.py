@@ -9,7 +9,11 @@ class Settings:
     PROJECT_VERSION: str = "1.0.0"
     
     # --- JWT / SEGURIDAD ---
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "tu_clave_secreta_super_segura")
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
+    if len(SECRET_KEY) < 32:
+        raise RuntimeError(
+            "SECRET_KEY must be configured with a random value of at least 32 characters."
+        )
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 480
 

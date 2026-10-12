@@ -64,8 +64,21 @@ templates.context_processors = [inject_user]
 # --- RUTAS DE VISTAS (FRONTEND) ---
 
 @app.get("/")
-def read_root():
-    return FileResponse(PROJECT_ROOT / "frontend" / "pages" / "login.html")
+def read_root(request: Request, db: Session = Depends(get_local_db)):
+    user = auth.get_current_user_optional(
+        request=request,
+        token_header=None,
+        db=db,
+    )
+    if user:
+        response = RedirectResponse(url="/dashboard", status_code=303)
+    else:
+        response = FileResponse(PROJECT_ROOT / "frontend" / "pages" / "login.html")
+
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 @app.get("/dashboard")
 @login_required

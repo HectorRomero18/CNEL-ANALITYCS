@@ -167,7 +167,7 @@ async def actualizar_usuario(
         params["password"] = pwd_context.hash(password)
         campos.append("password = :password")
 
-    query = f"UPDATE usuarios SET {', '.join(campos)} WHERE id = :id"
+    query = f"UPDATE usuarios SET {', '.join(campos)} WHERE id = :id" # nosec B608
 
     try:
         db.execute(text(query), params)

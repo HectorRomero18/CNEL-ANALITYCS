@@ -46,10 +46,13 @@ body {
 }
 
 .app-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 50px;
     margin-top: 35.3px;
     font-size: 1.5rem;
     font-weight: bold;
-    color: #333;
+    color: #266eda;
 }
 /* Panel Izquierdo Azul */
 .left-panel {
@@ -116,12 +119,6 @@ body {
     max-width: 380px;
 }
 
-.app-title {
-    font-size: 24px;
-    font-weight: 800;
-    color: #0d1b2a;
-    margin-bottom: 50px;
-}
 
 .welcome-header h2 {
     font-size: 28px;
