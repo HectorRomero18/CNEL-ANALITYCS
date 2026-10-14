@@ -68,7 +68,7 @@
             <header class="top-header">
                 <div class="search-bar">
                     <i class="fa-solid fa-magnifying-glass" onclick="buscarCliente()" style="cursor:pointer;"></i>
-                    <input type="text" id="codigoUsuario" placeholder="código de usuario" onkeypress="handleSearch(event)">
+                    <input type="number" id="codigoUsuario" inputmode="numeric" pattern="[0-9]*" placeholder="Código numérico de usuario" onkeypress="handleSearch(event)">
                 </div>
                 <div class="user-greeting">
                     <span>Hola, <strong id="userName">{{ user.username if user else 'Usuario' }}</strong></span>

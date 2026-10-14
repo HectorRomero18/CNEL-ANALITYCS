@@ -92,3 +92,6 @@ htmlcov/
 logs/
 .mypy_cache/
 .ruff_cache/
+
+activar_servidor.bat
+arrancar_oculto.vbs

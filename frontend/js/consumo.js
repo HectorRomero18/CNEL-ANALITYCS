@@ -59,6 +59,12 @@ function obtenerAnioConsumo(periodo) {
     return anioInicial ? anioInicial[1] : (anioSeparado ? anioSeparado[1] : '');
 }
 
+function formatearPeriodoConsumo(periodo) {
+    const valor = displayValue(periodo, '-').trim();
+    const periodoCompacto = valor.match(/^((?:19|20)\d{2})(0[1-9]|1[0-2])$/);
+    return periodoCompacto ? `${periodoCompacto[1]}/${periodoCompacto[2]}` : valor;
+}
+
 function mostrarConsumoFiltrado(anio) {
     const tbody = document.getElementById("tbody-consumo");
     const canvasChart = document.getElementById("chartConsumo");
@@ -80,7 +86,7 @@ function mostrarConsumoFiltrado(anio) {
             tbody.innerHTML = consumos.map((item, index) => `
                     <tr>
                         <td>${String(index + 1).padStart(2, '0')}</td>
-                        <td>${escapeHtml(displayValue(item.periodo))}</td>
+                        <td>${escapeHtml(formatearPeriodoConsumo(item.periodo))}</td>
                         <td><strong>${escapeHtml(displayValue(item.kwh))}</strong></td>
                         <td>${escapeHtml(displayValue(item.kwh_reactiva))}</td>
                         <td>${escapeHtml(displayValue(item.dias_facturados))}</td>
@@ -94,7 +100,7 @@ function mostrarConsumoFiltrado(anio) {
         const ctx = canvasChart.getContext('2d');
 
         // Invertimos los datos para mostrarlos cronológicamente (pasado -> presente)
-        const labels = consumos.map(c => c.periodo || '-').reverse();
+        const labels = consumos.map(c => formatearPeriodoConsumo(c.periodo)).reverse();
         const values = consumos.map(c => Number(c.kwh ?? 0)).reverse();
 
         consumoChartInstance = new Chart(ctx, {

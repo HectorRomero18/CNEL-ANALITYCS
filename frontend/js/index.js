@@ -125,7 +125,17 @@ async function buscarCliente() {
         Swal.fire({
             icon: 'warning',
             title: 'Campo vacío',
-            text: 'Por favor, ingrese un código de usuario o cliente.',
+            text: 'Por favor, ingrese el código numérico del cliente.',
+            confirmColor: '#6366F1'
+        });
+        return;
+    }
+
+    if (!/^[0-9]+$/.test(codigoInput)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código inválido',
+            text: 'El código del cliente solo puede contener números.',
             confirmColor: '#6366F1'
         });
         return;
@@ -157,18 +167,15 @@ async function buscarCliente() {
                 return;
             }
 
-            const responseText = await response.text();
-            let errorDetail = `Error HTTP ${response.status}`;
-            try {
-                const errorData = JSON.parse(responseText);
-                errorDetail = errorData.detail || errorDetail;
-            } catch {
-                if (responseText) errorDetail = responseText;
-            }
+            const errorMessages = {
+                404: 'El código de cliente no fue encontrado.',
+                422: 'El código del cliente solo puede contener números.',
+                503: 'No se pudo consultar la base de datos. Inténtelo nuevamente más tarde.'
+            };
             Swal.fire({
-                icon: 'error',
-                title: 'No encontrado',
-                text: errorDetail,
+                icon: response.status === 404 ? 'info' : 'error',
+                title: response.status === 404 ? 'Cliente no encontrado' : 'No se pudo buscar el cliente',
+                text: errorMessages[response.status] || 'Ocurrió un error al buscar el cliente. Inténtelo nuevamente.',
                 confirmColor: '#6366F1'
             });
             return;

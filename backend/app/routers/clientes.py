@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+import logging
+
+from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from app.db.session import get_db
@@ -15,6 +17,7 @@ from app.repositories.querys import (
 from app.schemas.cliente import ClienteCompletoResponse
 
 router = APIRouter(prefix="/api/clientes", tags=["Clientes"])
+logger = logging.getLogger(__name__)
 
 @router.get(
     "/{codigo_cliente}",
@@ -22,7 +25,11 @@ router = APIRouter(prefix="/api/clientes", tags=["Clientes"])
     dependencies=[Depends(get_current_user)],
 )
 def obtener_cliente_completo(
-    codigo_cliente: str,
+    codigo_cliente: str = Path(
+        ...,
+        pattern=r"^[0-9]+$",
+        description="Código numérico del cliente.",
+    ),
     db: Session = Depends(get_db)
 ):
     """
@@ -36,10 +43,11 @@ def obtener_cliente_completo(
     """
     try:
         cliente = obtener_cliente(db, codigo_cliente)
-    except SQLAlchemyError as e:
+    except SQLAlchemyError:
+        logger.exception("Error de base de datos al buscar cliente")
         raise HTTPException(
-            status_code=500,
-            detail=f"Error de base de datos al buscar cliente: {str(e)}"
+            status_code=503,
+            detail="No se pudo consultar la base de datos. Inténtelo nuevamente más tarde.",
         )
 
     if not cliente:
@@ -58,8 +66,9 @@ def obtener_cliente_completo(
             "consumos": obtener_consumos(db, codigo_cliente),
             "lecturas": obtener_lecturas(db, codigo_cliente)
         }
-    except SQLAlchemyError as e:
+    except SQLAlchemyError:
+        logger.exception("Error de base de datos al obtener datos del cliente")
         raise HTTPException(
-            status_code=500,
-            detail=f"Error de base de datos al obtener datos: {str(e)}"
+            status_code=503,
+            detail="No se pudieron obtener los datos del cliente. Inténtelo nuevamente más tarde.",
         )
