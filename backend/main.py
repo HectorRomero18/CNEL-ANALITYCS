@@ -50,8 +50,13 @@ app.include_router(admin.router)
 # Configuración de Rutas de Archivos
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-# Servir archivos estáticos (CSS, JS, Imágenes)
-app.mount("/static", StaticFiles(directory=PROJECT_ROOT / "frontend"), name="static")
+# Servir solo los recursos estáticos; las plantillas no deben ser accesibles como archivos.
+for asset_dir in ("css", "js", "img"):
+    app.mount(
+        f"/static/{asset_dir}",
+        StaticFiles(directory=PROJECT_ROOT / "frontend" / asset_dir),
+        name=f"static-{asset_dir}",
+    )
 
 # Configurar motor de plantillas Jinja2
 templates = Jinja2Templates(directory=PROJECT_ROOT / "frontend" / "pages")
@@ -82,7 +87,7 @@ def read_root(request: Request, db: Session = Depends(get_local_db)):
 
 @app.get("/dashboard")
 @login_required
-async def read_dashboard(request: Request):
+def read_dashboard(request: Request):
     return templates.TemplateResponse(
         request=request, 
         name="info_cliente.html", 
@@ -91,7 +96,7 @@ async def read_dashboard(request: Request):
 
 @app.get("/info-cliente")
 @login_required
-async def get_info_cliente(request: Request, codigo: str = None, db: Session = Depends(get_db)):
+def get_info_cliente(request: Request, codigo: str = None, db: Session = Depends(get_db)):
     context = {"active_page": "info-cliente"}
     
     if codigo:
@@ -108,25 +113,16 @@ async def get_info_cliente(request: Request, codigo: str = None, db: Session = D
 
 @app.get("/estado-cuenta")
 @login_required
-async def get_estado_cuenta(request: Request):
+def get_estado_cuenta(request: Request):
     return templates.TemplateResponse(
         request=request, 
         name="estado_cuenta.html", 
         context={"active_page": "estado-cuenta"}
     )
 
-@app.get("/estcta-sico")
-@login_required
-async def get_estcta_sico(request: Request):
-    return templates.TemplateResponse(
-        request=request, 
-        name="estado_sico.html", 
-        context={"active_page": "estcta-sico"}
-    )
-
 @app.get("/consumo")
 @login_required
-async def get_consumo(request: Request):
+def get_consumo(request: Request):
     return templates.TemplateResponse(
         request=request, 
         name="consumo.html", 
@@ -135,7 +131,7 @@ async def get_consumo(request: Request):
 
 @app.get("/lectura")
 @login_required
-async def get_lectura(request: Request):
+def get_lectura(request: Request):
     return templates.TemplateResponse(
         request=request, 
         name="lectura.html", 
@@ -144,7 +140,7 @@ async def get_lectura(request: Request):
 
 @app.get("/config")
 @login_required
-async def get_config(request: Request, db: Session = Depends(get_local_db)):
+def get_config(request: Request, db: Session = Depends(get_local_db)):
     user = auth.get_current_user_optional(request=request, token_header=None, db=db)
     if not user or user.get("rol", "").upper() not in ["ADMIN", "ADMINISTRADOR"]:
         return RedirectResponse(url="/dashboard", status_code=303)

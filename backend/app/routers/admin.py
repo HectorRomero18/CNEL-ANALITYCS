@@ -1,18 +1,23 @@
+import logging
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Form
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr
+from starlette.concurrency import run_in_threadpool
 
 from app.db.session import get_local_db
+from app.core.decorators import get_user_from_request
 from app.routers.auth import get_current_user_optional
 
 router = APIRouter(prefix="/admin", tags=["Administración"])
 templates = Jinja2Templates(directory="app/templates")
 pwd_context = CryptContext(schemes=["bcrypt", "bcrypt_sha256"], deprecated="auto")
+logger = logging.getLogger(__name__)
 
 # 🔒 DECORADOR EXCLUSIVO PARA ROL ADMIN
 def admin_required(func):
@@ -24,17 +29,13 @@ def admin_required(func):
                     request = arg
                     break
 
-        db = next(get_local_db())
-        try:
-            user = get_current_user_optional(request=request, token_header=None, db=db)
-        finally:
-            db.close()
+        user = await run_in_threadpool(get_user_from_request, request)
 
         # Validar si existe sesión y si el rol es Admin
         if not user or user.get("rol", "").upper() not in ["ADMIN", "ADMINISTRADOR"]:
             return RedirectResponse(url="/", status_code=303)
 
-        response = await func(*args, **kwargs)
+        response = await run_in_threadpool(func, *args, **kwargs)
         response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
         return response
     return wrapper
@@ -44,7 +45,7 @@ def admin_required(func):
 # --------------------------------------------------------------------------
 @router.get("/usuarios", response_class=HTMLResponse)
 @admin_required
-async def admin_usuarios_page(request: Request, db: Session = Depends(get_local_db)):
+def admin_usuarios_page(request: Request, db: Session = Depends(get_local_db)):
     user = get_current_user_optional(request=request, token_header=None, db=db)
     
     # Obtener roles para los select del modal
@@ -61,7 +62,7 @@ async def admin_usuarios_page(request: Request, db: Session = Depends(get_local_
 # --------------------------------------------------------------------------
 
 @router.get("/api/usuarios")
-async def listar_usuarios(request: Request, db: Session = Depends(get_local_db)):
+def listar_usuarios(request: Request, db: Session = Depends(get_local_db)):
     user = get_current_user_optional(request=request, token_header=None, db=db)
     if not user or user.get("rol", "").upper() not in ["ADMIN", "ADMINISTRADOR"]:
         raise HTTPException(status_code=403, detail="Acceso denegado")
@@ -91,7 +92,7 @@ async def listar_usuarios(request: Request, db: Session = Depends(get_local_db))
     return JSONResponse(content=usuarios)
 
 @router.post("/api/usuarios")
-async def crear_usuario(
+def crear_usuario(
     request: Request,
     username: str = Form(...),
     email: str = Form(...),
@@ -122,12 +123,22 @@ async def crear_usuario(
         })
         db.commit()
         return JSONResponse(content={"message": "Usuario creado con éxito"})
-    except Exception as e:
+    except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=400, detail="El usuario, cédula o email ya existe.")
+        raise HTTPException(
+            status_code=409,
+            detail="No se pudo crear el usuario por un conflicto de datos.",
+        )
+    except SQLAlchemyError:
+        db.rollback()
+        logger.exception("Error de base de datos al crear usuario")
+        raise HTTPException(
+            status_code=503,
+            detail="No se pudo crear el usuario por un error de base de datos.",
+        )
 
 @router.put("/api/usuarios/{usuario_id}")
-async def actualizar_usuario(
+def actualizar_usuario(
     usuario_id: int,
     request: Request,
     username: str = Form(...),
@@ -173,12 +184,22 @@ async def actualizar_usuario(
         db.execute(text(query), params)
         db.commit()
         return JSONResponse(content={"message": "Usuario actualizado con éxito"})
-    except Exception:
+    except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=400, detail="El usuario, cédula o email ya existe.")
+        raise HTTPException(
+            status_code=409,
+            detail="No se pudo actualizar el usuario por un conflicto de datos.",
+        )
+    except SQLAlchemyError:
+        db.rollback()
+        logger.exception("Error de base de datos al actualizar usuario")
+        raise HTTPException(
+            status_code=503,
+            detail="No se pudo actualizar el usuario por un error de base de datos.",
+        )
 
 @router.put("/api/usuarios/{usuario_id}/estado")
-async def cambiar_estado_usuario(usuario_id: int, request: Request, db: Session = Depends(get_local_db)):
+def cambiar_estado_usuario(usuario_id: int, request: Request, db: Session = Depends(get_local_db)):
     user = get_current_user_optional(request=request, token_header=None, db=db)
     if not user or user.get("rol", "").upper() not in ["ADMIN", "ADMINISTRADOR"]:
         raise HTTPException(status_code=403, detail="Acceso denegado")
@@ -189,7 +210,7 @@ async def cambiar_estado_usuario(usuario_id: int, request: Request, db: Session 
     return JSONResponse(content={"message": "Estado actualizado"})
 
 @router.delete("/api/usuarios/{usuario_id}")
-async def eliminar_usuario(usuario_id: int, request: Request, db: Session = Depends(get_local_db)):
+def eliminar_usuario(usuario_id: int, request: Request, db: Session = Depends(get_local_db)):
     user = get_current_user_optional(request=request, token_header=None, db=db)
     if not user or user.get("rol", "").upper() not in ["ADMIN", "ADMINISTRADOR"]:
         raise HTTPException(status_code=403, detail="Acceso denegado")

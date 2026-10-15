@@ -3,7 +3,17 @@ from functools import wraps
 from fastapi import Request
 from fastapi.responses import RedirectResponse
 from app.routers.auth import get_current_user_optional
-from app.db.session import get_local_db
+from app.db.session import SessionLocal
+from starlette.concurrency import run_in_threadpool
+
+
+def get_user_from_request(request: Request):
+    with SessionLocal() as db:
+        return get_current_user_optional(
+            request=request,
+            token_header=None,
+            db=db,
+        )
 
 def login_required(func):
     @wraps(func)
@@ -18,11 +28,7 @@ def login_required(func):
         if not request:
             raise ValueError("La función decorada debe recibir 'request: Request'")
 
-        db = next(get_local_db())
-        try:
-            user = get_current_user_optional(request=request, token_header=None, db=db)
-        finally:
-            db.close()
+        user = await run_in_threadpool(get_user_from_request, request)
 
         # Si no hay usuario activo, redirigir al Login y borrar cualquier cookie remanente
         if not user:
@@ -30,8 +36,7 @@ def login_required(func):
             response.delete_cookie("access_token", path="/")
             return response
 
-        # Obtener la respuesta de la plantilla HTML
-        response = await func(*args, **kwargs)
+        response = await run_in_threadpool(func, *args, **kwargs)
 
         # 🟢 EVITA QUE CHROME GUARDE LA VISTA EN CACHÉ DE MEMORIA
         response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"

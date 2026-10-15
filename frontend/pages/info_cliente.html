@@ -116,5 +116,8 @@
 <script>
     window.initialClienteData = {{ initial_data | tojson if initial_data else 'null' }};
 </script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
 <script src="/static/js/info_cliente.js?v=20261006-2"></script>
 {% endblock %}

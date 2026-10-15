@@ -37,7 +37,6 @@ HEADER_LABELS = {
     "factura": "Factura",
     "valor": "Valor",
     "saldo": "Saldo",
-    "estado_sico": "Estado SICO",
     "periodo": "Período",
     "kwh": "Energía activa (kWh)",
     "kwh_reactiva": "Energía reactiva (kvarh)",
@@ -147,7 +146,6 @@ def exportar_excel(codigo_cliente: str, db: Session = Depends(get_db)):
 
         sheets = [
             ("Estado de Cuenta", data["estado_cuenta"], ["fecha", "tipo_evento", "codigo_evento", "factura", "valor", "saldo"]),
-            ("Estado SICO", data["estado_sico"], ["fecha", "estado_sico", "codigo_evento", "factura", "valor", "saldo"]),
             ("Consumos", data["consumos"], ["periodo", "kwh", "kwh_reactiva", "dias_facturados"]),
             ("Lecturas", data["lecturas"], ["cx_cliente", "cx_nummed", "fx_tomalec", "qx_ultlec", "qx_tomalec", "qx_factlec", "consumo_kwh", "tp_lectura", "tipo_lectura_desc", "cx_observa", "observacion_desc", "cx_tipo"]),
         ]

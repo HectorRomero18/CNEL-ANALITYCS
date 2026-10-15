@@ -216,6 +216,8 @@ async function buscarCliente() {
 
 function obtenerModuloExportable() {
     const modulos = {
+        '/dashboard': 'cliente',
+        '/info-cliente': 'cliente',
         '/estado-cuenta': 'estado_cuenta',
         '/lectura': 'lectura',
         '/consumo': 'consumo'
@@ -271,7 +273,6 @@ function descargarExcelCompleto(filtros, incluirFiltrados) {
     const nombres = {
         'INFORMACIÓN GENERAL DEL CLIENTE': 'Datos Personales',
         'ESTADO DE CUENTA': 'Estado de Cuenta',
-        'ESTADO SICO': 'Estado SICO',
         'CONSUMOS': 'Consumos',
         'LECTURAS': 'Lecturas'
     };
@@ -287,9 +288,14 @@ function descargarExcelCompleto(filtros, incluirFiltrados) {
             seccion.headers,
             ...seccion.rows
         ]);
-        const celdasTitulo = `A1:${ultimaColumna}1`;
-        const celdasCodigo = `A2:${ultimaColumna}2`;
-        const celdasSeccion = `A4:${ultimaColumna}4`;
+        const celdasTitulo = seccion.title === 'INFORMACIÓN GENERAL DEL CLIENTE'
+            ? 'A1:B1'
+            : `A1:${ultimaColumna}1`;
+        const ultimaColumnaEncabezado = seccion.title === 'INFORMACIÓN GENERAL DEL CLIENTE'
+            ? 'B'
+            : ultimaColumna;
+        const celdasCodigo = `A2:${ultimaColumnaEncabezado}2`;
+        const celdasSeccion = `A4:${ultimaColumnaEncabezado}4`;
         worksheet['!merges'] = [
             XLSX.utils.decode_range(celdasTitulo),
             XLSX.utils.decode_range(celdasCodigo),
@@ -310,6 +316,13 @@ function descargarExcelCompleto(filtros, incluirFiltrados) {
                 Math.max(ancho, String(row[columnIndex] ?? '').length), 0);
             return { wch: Math.min(38, Math.max(14, String(header).length + 3, anchoDatos + 2)) };
         });
+        if (seccion.title === 'INFORMACIÓN GENERAL DEL CLIENTE') {
+            const anchoTabla = worksheet['!cols'].reduce((total, columna) => total + columna.wch, 0) + 48;
+            worksheet['!cols'] = [
+                { wch: anchoTabla / 2 },
+                { wch: anchoTabla / 2 }
+            ];
+        }
         worksheet['!pageSetup'] = {
             orientation: 'landscape',
             fitToWidth: 1,
@@ -357,7 +370,11 @@ function descargarExcelCompleto(filtros, incluirFiltrados) {
                         patternType: 'solid',
                         fgColor: { rgb: rowIndex % 2 === 0 ? 'F1F5FB' : 'FFFFFF' }
                     },
-                    alignment: { vertical: 'center', wrapText: true },
+                    alignment: {
+                        horizontal: seccion.title === 'INFORMACIÓN GENERAL DEL CLIENTE' ? 'center' : 'left',
+                        vertical: 'center',
+                        wrapText: true
+                    },
                     border: estiloCelda
                 };
             });
@@ -443,13 +460,6 @@ function obtenerSeccionesReporte(data, filtros, incluirFiltrados) {
             ].map(valor => displayValue(valor)))
         },
         {
-            title: 'ESTADO SICO',
-            headers: ['Fecha', 'Estado SICO', 'Código de evento', 'Factura', 'Valor', 'Saldo'],
-            rows: (data.estado_sico || []).map(row => [
-                row.fecha, row.estado_sico, row.codigo_evento, row.factura, row.valor, row.saldo
-            ].map(valor => displayValue(valor)))
-        },
-        {
             title: 'CONSUMOS',
             headers: ['Período', 'Energía activa (kWh)', 'Energía reactiva (kvarh)', 'Días facturados'],
             rows: consumption.map(row => [
@@ -530,35 +540,254 @@ async function descargarPdfCompleto(filtros, incluirFiltrados) {
     const logoWidth = Math.min(logo.width / logo.height * logoHeight, 30);
     const secciones = obtenerSeccionesReporte(data, filtros, incluirFiltrados);
     const margenIzquierdo = 14;
-    const margenSuperior = 34;
+    const margenSuperior = 31;
 
     pdf.setProperties({ title: `CNEL Analytics - Cliente ${clienteActual}` });
 
-    let posicionY = margenSuperior;
-    secciones.forEach(seccion => {
-        if (posicionY > pdf.internal.pageSize.getHeight() - 26) {
-            pdf.addPage();
-            posicionY = margenSuperior;
+    const datosPersonales = Object.entries(data.datos_personales || {});
+
+    dibujarEncabezadoPdf(pdf, logo, logoWidth, logoHeight);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(12);
+    pdf.setTextColor(36, 59, 100);
+    pdf.text(secciones[0].title, pdf.internal.pageSize.getWidth() / 2, margenSuperior, { align: 'center' });
+    const anchoPagina = pdf.internal.pageSize.getWidth();
+    const espacioEntreTablas = 18;
+    const anchoTablaPersonal = (anchoPagina - (margenIzquierdo * 2) - espacioEntreTablas) / 2;
+    const calcularAltoMinimoFila = (cantidadFilas, inicioY, altoEncabezado = 8, margenInferior = 10) => {
+        if (!cantidadFilas) return 0;
+        const altoDisponible = pdf.internal.pageSize.getHeight() - inicioY - margenInferior - altoEncabezado;
+        return Math.max(5, altoDisponible / cantidadFilas);
+    };
+    const opcionesTablaPersonal = {
+        head: [['Campo', 'Valor']],
+        startY: margenSuperior + 4,
+        tableWidth: anchoTablaPersonal,
+        columnStyles: {
+            0: { cellWidth: 45, fontStyle: 'bold' },
+            1: { cellWidth: anchoTablaPersonal - 45 }
+        },
+        styles: { fontSize: 9, cellPadding: 3, overflow: 'linebreak', halign: 'center', valign: 'middle' },
+        headStyles: { fillColor: [36, 59, 100], halign: 'center', fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [241, 245, 251] }
+    };
+    const filasPersonalesIzquierda = datosPersonales.slice(0, 10).map(([campo, valor]) => [
+        obtenerEtiquetaExportacion(campo),
+        displayValue(valor)
+    ]);
+    const filasPersonalesDerecha = datosPersonales.slice(10).map(([campo, valor]) => [
+        obtenerEtiquetaExportacion(campo),
+        displayValue(valor)
+    ]);
+
+    pdf.autoTable({
+        ...opcionesTablaPersonal,
+        body: filasPersonalesIzquierda,
+        margin: { left: margenIzquierdo, bottom: 14 }
+    });
+    pdf.autoTable({
+        ...opcionesTablaPersonal,
+        body: filasPersonalesDerecha,
+        margin: {
+            left: margenIzquierdo + anchoTablaPersonal + espacioEntreTablas,
+            right: margenIzquierdo,
+            bottom: 14
         }
+    });
+
+    const estadoCuenta = secciones[1];
+    const filasMaximasPorColumna = 15;
+    const paginasEstadoCuenta = Math.max(
+        1,
+        Math.ceil(estadoCuenta.rows.length / (filasMaximasPorColumna * 2))
+    );
+    const filasCuentaPorColumna = Math.max(
+        1,
+        Math.ceil(estadoCuenta.rows.length / (paginasEstadoCuenta * 2))
+    );
+    for (let paginaCuenta = 0; paginaCuenta < paginasEstadoCuenta; paginaCuenta += 1) {
+        pdf.addPage();
         dibujarEncabezadoPdf(pdf, logo, logoWidth, logoHeight);
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(12);
         pdf.setTextColor(36, 59, 100);
-        pdf.text(seccion.title, pdf.internal.pageSize.getWidth() / 2, posicionY, { align: 'center' });
-        pdf.autoTable({
-            head: [seccion.headers],
-            body: seccion.rows.length
-                ? seccion.rows
-                : [{ content: 'Sin registros', colSpan: seccion.headers.length, styles: { halign: 'center' } }],
-            startY: posicionY + 4,
-            margin: { top: margenSuperior, right: margenIzquierdo, bottom: 14, left: margenIzquierdo },
-            styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak' },
-            headStyles: { fillColor: [36, 59, 100], halign: 'center', fontStyle: 'bold' },
-            alternateRowStyles: { fillColor: [241, 245, 251] },
-            didDrawPage: () => dibujarEncabezadoPdf(pdf, logo, logoWidth, logoHeight)
+        pdf.text(estadoCuenta.title, anchoPagina / 2, margenSuperior, { align: 'center' });
+
+        const inicioFilas = paginaCuenta * filasCuentaPorColumna * 2;
+        const filasCuentaIzquierda = estadoCuenta.rows.slice(inicioFilas, inicioFilas + filasCuentaPorColumna);
+        const filasCuentaDerecha = estadoCuenta.rows.slice(
+            inicioFilas + filasCuentaPorColumna,
+            inicioFilas + filasCuentaPorColumna * 2
+        );
+        const tablasCuenta = [
+            { x: margenIzquierdo, rows: filasCuentaIzquierda },
+            { x: margenIzquierdo + anchoTablaPersonal + espacioEntreTablas, rows: filasCuentaDerecha }
+        ].filter(tabla => tabla.rows.length);
+        if (!estadoCuenta.rows.length) {
+            tablasCuenta.push({
+                x: margenIzquierdo,
+                rows: [{ content: 'Sin registros', colSpan: estadoCuenta.headers.length, styles: { halign: 'center' } }]
+            });
+        }
+
+        const paginaEstadoCuenta = pdf.internal.getNumberOfPages();
+        tablasCuenta.forEach(tabla => {
+            pdf.setPage(paginaEstadoCuenta);
+            pdf.autoTable({
+                head: [estadoCuenta.headers],
+                body: tabla.rows,
+                startY: margenSuperior + 4,
+                rowPageBreak: 'avoid',
+                tableWidth: anchoTablaPersonal,
+                margin: {
+                    top: margenSuperior,
+                    right: anchoPagina - tabla.x - anchoTablaPersonal,
+                    bottom: 10,
+                    left: tabla.x
+                },
+                styles: {
+                    fontSize: 7.5,
+                    cellPadding: 2,
+                    minCellHeight: estadoCuenta.rows.length
+                        ? Math.min(
+                            10,
+                            calcularAltoMinimoFila(tabla.rows.length, margenSuperior + 4)
+                        )
+                        : 0,
+                    overflow: 'linebreak',
+                    halign: 'center',
+                    valign: 'middle'
+                },
+                headStyles: { fillColor: [36, 59, 100], halign: 'center', valign: 'middle', fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: [241, 245, 251] },
+                didDrawPage: () => dibujarEncabezadoPdf(pdf, logo, logoWidth, logoHeight)
+            });
         });
-        posicionY = pdf.lastAutoTable.finalY + 12;
-    });
+    }
+
+    const consumo = secciones[2];
+    const lecturas = secciones[3];
+    const filasLecturas = lecturas.rows.map(fila => [
+        fila[2],
+        fila[1],
+        fila[3],
+        fila[4],
+        fila[5],
+        fila[6],
+        `Tipo: ${fila[7]} ${fila[8]}; Obs.: ${fila[9]} ${fila[10]}; Reg.: ${fila[11]}`
+    ]);
+    const anchoColumna = (anchoPagina - (margenIzquierdo * 2) - 6) / 2;
+    const filasPorPagina = 9;
+    let indiceConsumo = 0;
+    let indiceLectura = 0;
+    let pagina = 0;
+
+    while (pagina === 0 || indiceConsumo < consumo.rows.length || indiceLectura < filasLecturas.length) {
+        pdf.addPage();
+        dibujarEncabezadoPdf(pdf, logo, logoWidth, logoHeight);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(12);
+        pdf.setTextColor(36, 59, 100);
+        const filasConsumoPagina = consumo.rows.slice(indiceConsumo, indiceConsumo + filasPorPagina);
+        indiceConsumo += filasConsumoPagina.length;
+        const filasLecturasPagina = filasLecturas.slice(indiceLectura, indiceLectura + filasPorPagina);
+        indiceLectura += filasLecturasPagina.length;
+        pdf.text(
+            filasLecturasPagina.length ? 'CONSUMOS Y LECTURAS' : 'CONSUMO',
+            anchoPagina / 2,
+            margenSuperior,
+            { align: 'center' }
+        );
+        const inicioTabla = margenSuperior + 6;
+        const columnas = [];
+        if (filasConsumoPagina.length || (!consumo.rows.length && pagina === 0)) {
+            columnas.push({
+                x: margenIzquierdo,
+                titulo: consumo.title,
+                headers: consumo.headers,
+                rows: filasConsumoPagina,
+                columnStyles: {
+                    0: { cellWidth: 30 },
+                    1: { cellWidth: 35 },
+                    2: { cellWidth: 35 },
+                    3: { cellWidth: 25 }
+                }
+            });
+        }
+        if (filasLecturasPagina.length) {
+            columnas.push({
+                x: margenIzquierdo + anchoColumna + 6,
+                titulo: lecturas.title,
+                headers: ['Fecha', 'Medidor', 'Anterior', 'Tomada', 'Facturada', 'kWh', 'Tipo / observación'],
+                rows: filasLecturasPagina,
+                columnStyles: {
+                    0: { cellWidth: 19 },
+                    1: { cellWidth: 13 },
+                    2: { cellWidth: 17 },
+                    3: { cellWidth: 17 },
+                    4: { cellWidth: 17 },
+                    5: { cellWidth: 15 },
+                    6: { cellWidth: 33.5 }
+                }
+            });
+        } else if (indiceConsumo < consumo.rows.length) {
+            const filasConsumoDerecha = consumo.rows.slice(indiceConsumo, indiceConsumo + filasPorPagina);
+            indiceConsumo += filasConsumoDerecha.length;
+            columnas.push({
+                x: margenIzquierdo + anchoColumna + 6,
+                titulo: consumo.title,
+                headers: consumo.headers,
+                rows: filasConsumoDerecha,
+                columnStyles: {
+                    0: { cellWidth: 30 },
+                    1: { cellWidth: 35 },
+                    2: { cellWidth: 35 },
+                    3: { cellWidth: 25 }
+                }
+            });
+        }
+
+        columnas.forEach(columna => {
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(9);
+            pdf.setTextColor(36, 59, 100);
+            pdf.text(columna.titulo, columna.x + anchoColumna / 2, inicioTabla, { align: 'center' });
+            pdf.autoTable({
+                head: [columna.headers],
+                body: columna.rows.length
+                    ? columna.rows
+                    : [{ content: 'Sin registros', colSpan: columna.headers.length, styles: { halign: 'center' } }],
+                startY: inicioTabla + 3,
+                margin: {
+                    top: margenSuperior,
+                    right: anchoPagina - columna.x - anchoColumna,
+                    bottom: 10,
+                    left: columna.x
+                },
+                tableWidth: anchoColumna,
+                columnStyles: columna.columnStyles,
+                pageBreak: 'avoid',
+                rowPageBreak: 'avoid',
+                styles: {
+                    fontSize: 6.5,
+                    cellPadding: 1,
+                    minCellHeight: columna.rows.length
+                        ? Math.min(
+                            16,
+                            calcularAltoMinimoFila(columna.rows.length, inicioTabla + 3)
+                        )
+                        : 0,
+                    overflow: 'linebreak',
+                    halign: 'center',
+                    valign: 'middle'
+                },
+                headStyles: { fillColor: [36, 59, 100], halign: 'center', valign: 'middle', fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: [241, 245, 251] },
+                didDrawPage: () => dibujarEncabezadoPdf(pdf, logo, logoWidth, logoHeight)
+            });
+        });
+        pagina += 1;
+    }
 
     const codigoArchivo = String(clienteActual).replace(/[^a-zA-Z0-9_-]/g, '_');
     pdf.save(`CNEL_Analytics_${codigoArchivo}.pdf`);
