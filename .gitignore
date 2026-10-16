@@ -95,3 +95,6 @@ logs/
 
 activar_servidor.bat
 arrancar_oculto.vbs
+
+migrar.py 
+test_db.py
